@@ -16,3 +16,4 @@ int main(int argc, char *argv[])
 //todo do not exit but to tray
 //todo add desktop entry
 //todo solve bug when multiple at once
+//todo add second layout including slider and value for the second display
