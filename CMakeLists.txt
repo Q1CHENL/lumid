@@ -13,7 +13,7 @@ find_package(Qt5 COMPONENTS
         Widgets
         REQUIRED)
 
-add_executable(Slider main.cpp Slider.cpp Slider.h)
+add_executable(Slider main.cpp Sliders.cpp Sliders.hpp)
 target_link_libraries(Slider
         Qt5::Core
         Qt5::Gui

@@ -2,11 +2,11 @@
 // Created by liuqichen on 2/13/23.
 //
 #include <sstream>
-#include "Slider.h"
+#include "Sliders.hpp"
 
 int getDisplayBrightness();
 
-Slider::Slider() {
+Sliders::Sliders() {
     setWindowTitle("BD");
     setFixedSize(100, 250);
     int currBrightness = getDisplayBrightness();
@@ -26,7 +26,7 @@ Slider::Slider() {
 
     //general layout settings
     m_Layout.addWidget(&valueLabel);
-    connect(&m_Slider_1, &QSlider::valueChanged, this, &Slider::on_value_changed);
+    connect(&m_Slider_1, &QSlider::valueChanged, this, &Sliders::on_value_changed);
     m_Layout.addWidget(&m_Slider_1);
     m_Layout.setAlignment(Qt::AlignHCenter);
 
@@ -34,12 +34,12 @@ Slider::Slider() {
 //    m_Slider_2.setRange(0, 10);
 //    m_Slider_2.setValue(0);
 //    m_Slider_2.setSingleStep(1);
-//    connect(&m_Slider_2, &QSlider::valueChanged, this, &Slider::on_value_changed);
+//    connect(&m_Slider_2, &QSlider::valueChanged, this, &Sliders::on_value_changed);
 //    m_Layout.addWidget(&m_Slider_2);
     setLayout(&m_Layout);
 }
 
-void Slider::on_value_changed(int value) {
+void Sliders::on_value_changed(int value) {
     QStringList args;
     QString newValue = QString::number(value);
     QStringList arguments;

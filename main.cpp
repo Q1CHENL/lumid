@@ -1,12 +1,12 @@
 
 #include <QApplication>
-#include "Slider.h"
+#include "Sliders.hpp"
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
-    Slider window;
+    Sliders window;
     window.show();
 
     return QApplication::exec();

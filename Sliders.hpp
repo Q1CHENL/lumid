@@ -12,10 +12,10 @@
 #include <QProcess>
 #include <QLabel>
 
-class Slider : public QWidget
+class Sliders : public QWidget
 {
 public:
-    Slider();
+    Sliders();
 
 private:
     void on_value_changed(int value);
