@@ -45,9 +45,11 @@ void Sliders::on_value_changed(int value) {
     QStringList arguments;
 
     static int last_value = 0;
-    arguments << newValue << "--display";
+    //change the bus number after --bus to your monitors'
+    //use sudo cat /dev/i2c* to list all buses
+    arguments << newValue << "--async" << "--bus" << "3";
     //Note that here sudo is the program, ddcutil is considered as an argument
-    QProcess::startDetached("sudo", QStringList() << "ddcutil" << "setvcp" << "10" << arguments << "2");
+    QProcess::startDetached("sudo", QStringList() << "ddcutil" << "setvcp" << "10" << arguments);
 
     last_value = value;
     valueLabel.setText(QString::number(value));

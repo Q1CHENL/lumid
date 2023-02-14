@@ -1,6 +1,0 @@
-#!/bin/zsh
-string=$(sudo ddcutil getvcp 10 --display $1)
-br=$(echo "$string" | grep -o -E '[0-9]+')
-current=$(echo "${br[6]}${br[7]}${br[8]}" | tr -d -c 0-9)
-sudo ddcutil setvcp 10 $((${current} + 10)) --display $1
-#increase brightness by 10
