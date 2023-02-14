@@ -58,7 +58,7 @@ void Sliders::on_value_changed(int value) {
 // from ChatGPT
 int getDisplayBrightness() {
     std::string result;
-    std::string cmd = "sudo ddcutil getvcp 10 --display 2";
+    std::string cmd = "sudo ddcutil getvcp 10 --bus 3";
 
     FILE *pipe = popen(cmd.c_str(), "r");
     if (!pipe) return -1;
