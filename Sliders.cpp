@@ -4,8 +4,6 @@
 #include <sstream>
 #include "Sliders.hpp"
 
-int getDisplayBrightness();
-
 Sliders::Sliders() {
     setWindowTitle("BD");
     setFixedSize(100, 250);
@@ -70,7 +68,7 @@ void Sliders::on_value_changed(int value) {
 }
 
 // from ChatGPT
-int getDisplayBrightness() {
+int Sliders::getDisplayBrightness() {
     std::string result;
     std::string cmd = "sudo ddcutil getvcp 10 --bus 3";
 

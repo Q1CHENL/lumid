@@ -19,6 +19,7 @@ public:
 
 private:
     void on_value_changed(int value);
+    static int getDisplayBrightness();
     QVBoxLayout m_Layout_1;
     QVBoxLayout m_Layout_2;
     QHBoxLayout m_MainLayout;
