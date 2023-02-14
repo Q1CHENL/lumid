@@ -11,12 +11,19 @@ Sliders::Sliders() {
     setFixedSize(100, 250);
     int currBrightness = getDisplayBrightness();
 
-    //value label settings
-    valueLabel.setFixedSize(30, 24);
-    valueLabel.setFrameStyle(QFrame::NoFrame);
-    valueLabel.setLineWidth(1);
-    valueLabel.setText(QString::number(currBrightness));
-    valueLabel.setAlignment(Qt::AlignCenter);
+    //value label 1 settings
+    m_valueLabel_1.setFixedSize(30, 24);
+    m_valueLabel_1.setFrameStyle(QFrame::NoFrame);
+    m_valueLabel_1.setLineWidth(1);
+    m_valueLabel_1.setText(QString::number(currBrightness));
+    m_valueLabel_1.setAlignment(Qt::AlignCenter);
+
+    //value label 2 settings
+    m_valueLabel_2.setFixedSize(30, 24);
+    m_valueLabel_2.setFrameStyle(QFrame::NoFrame);
+    m_valueLabel_2.setLineWidth(1);
+    m_valueLabel_2.setText(QString::number(0));
+    m_valueLabel_2.setAlignment(Qt::AlignCenter);
 
     //slider 1 settings
     m_Slider_1.setOrientation(Qt::Vertical);
@@ -25,18 +32,25 @@ Sliders::Sliders() {
     m_Slider_1.setSingleStep(10);
 
     //general layout settings
-    m_Layout.addWidget(&valueLabel);
+    m_Layout_1.addWidget(&m_valueLabel_1);
     connect(&m_Slider_1, &QSlider::valueChanged, this, &Sliders::on_value_changed);
-    m_Layout.addWidget(&m_Slider_1);
-    m_Layout.setAlignment(Qt::AlignHCenter);
+    m_Layout_1.addWidget(&m_Slider_1);
+    m_Layout_1.setAlignment(Qt::AlignHCenter);
 
-//    m_Slider_2.setOrientation(Qt::Vertical);
-//    m_Slider_2.setRange(0, 10);
-//    m_Slider_2.setValue(0);
-//    m_Slider_2.setSingleStep(1);
-//    connect(&m_Slider_2, &QSlider::valueChanged, this, &Sliders::on_value_changed);
-//    m_Layout.addWidget(&m_Slider_2);
-    setLayout(&m_Layout);
+    //Slider 2 settings
+    m_Slider_2.setOrientation(Qt::Vertical);
+    m_Slider_2.setRange(0, 10);
+    m_Slider_2.setValue(0);
+    m_Slider_2.setSingleStep(10);
+
+    m_Layout_2.addWidget(&m_valueLabel_2);
+    m_Layout_2.addWidget(&m_Slider_2);
+    connect(&m_Slider_2, &QSlider::valueChanged, this, &Sliders::on_value_changed);
+
+    m_MainLayout.addLayout(&m_Layout_1);
+    m_MainLayout.addLayout(&m_Layout_2);
+    setLayout(&m_MainLayout);
+
 }
 
 void Sliders::on_value_changed(int value) {
@@ -52,7 +66,7 @@ void Sliders::on_value_changed(int value) {
     QProcess::startDetached("sudo", QStringList() << "ddcutil" << "setvcp" << "10" << arguments);
 
     last_value = value;
-    valueLabel.setText(QString::number(value));
+    m_valueLabel_1.setText(QString::number(value));
 }
 
 // from ChatGPT

@@ -19,10 +19,13 @@ public:
 
 private:
     void on_value_changed(int value);
-    QVBoxLayout m_Layout;
+    QVBoxLayout m_Layout_1;
+    QVBoxLayout m_Layout_2;
+    QHBoxLayout m_MainLayout;
     QSlider m_Slider_1;
     QSlider m_Slider_2;
-    QLabel valueLabel;
+    QLabel m_valueLabel_1;
+    QLabel m_valueLabel_2;
 };
 
 #endif //SLIDER_SLIDER_H
