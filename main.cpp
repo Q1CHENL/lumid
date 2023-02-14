@@ -14,4 +14,5 @@ int main(int argc, char *argv[])
 //todo show current value
 //todo set brightness with current value instead of constant 10
 //todo do not exit but to tray
-
+//todo add desktop entry
+//todo solve bug when multiple at once
