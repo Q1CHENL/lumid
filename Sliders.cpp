@@ -126,3 +126,7 @@ void Sliders::closeEvent(QCloseEvent *event) {
         event->accept(); // exit the application
     }
 }
+
+void Sliders::onExit() {
+    QCoreApplication::quit();
+}
