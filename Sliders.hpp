@@ -17,17 +17,14 @@ class Sliders : public QWidget
 {
 public:
     Sliders();
-    static void onExit() {
-        // Call QCoreApplication::quit() to exit the application
-        QCoreApplication::quit();
-    }
+    static void onExit();
 
 private:
     QSystemTrayIcon trayIcon;
     void on_value_changed_1(int value);
     void on_value_changed_2(int value);
     static int getDisplayBrightness(int display_bus);
-    void closeEvent(QCloseEvent *event) override ;
+    void closeEvent(QCloseEvent *event) override;
     QVBoxLayout m_Layout_1;
     QVBoxLayout m_Layout_2;
     QHBoxLayout m_MainLayout;
