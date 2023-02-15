@@ -29,12 +29,14 @@ Sliders::Sliders() {
     m_Slider_1.setRange(0, 100);
     m_Slider_1.setValue(currBrightness_1);
     m_Slider_1.setSingleStep(10);
+    m_Slider_1.setTracking(false);
 
     //Slider 2 settings
     m_Slider_2.setOrientation(Qt::Vertical);
     m_Slider_2.setRange(0, 100);
     m_Slider_2.setValue(currBrightness_2);
     m_Slider_2.setSingleStep(10);
+    m_Slider_2.setTracking(false);
 
     //general layout settings
     m_Layout_1.addWidget(&m_valueLabel_1);
