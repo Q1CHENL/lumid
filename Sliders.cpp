@@ -3,10 +3,25 @@
 //
 #include <sstream>
 #include "Sliders.hpp"
+#include <QCloseEvent>
+#include <QMenu>
+#include <QDebug>
 
 Sliders::Sliders() {
     setWindowTitle("BD");
     setFixedSize(100, 250);
+
+    //change the path to yours
+    //tray icon does not show using resource image
+    trayIcon.setIcon(QIcon("/usr/share/icons/darkerbrightness.png"));
+
+    auto *trayMenu = new QMenu(this);
+    trayMenu->addAction("Open", this, &Sliders::show);
+    trayMenu->addAction("Exit", this, &Sliders::onExit);
+
+    trayIcon.setContextMenu(trayMenu);
+    trayIcon.show();
+
     int currBrightness_1 = getDisplayBrightness(3);
     int currBrightness_2 = getDisplayBrightness(2);
 
@@ -101,4 +116,13 @@ int Sliders::getDisplayBrightness(int display_bus) {
     std::istringstream(brightnessStr) >> brightness;
 
     return std::stoi(brightnessStr);
+}
+
+void Sliders::closeEvent(QCloseEvent *event) {
+    if (trayIcon.isVisible()) {
+        hide(); // hide the main window
+        event->ignore(); // ignore the close event
+    } else {
+        event->accept(); // exit the application
+    }
 }
