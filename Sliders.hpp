@@ -18,8 +18,9 @@ public:
     Sliders();
 
 private:
-    void on_value_changed(int value);
-    static int getDisplayBrightness();
+    void on_value_changed_1(int value);
+    void on_value_changed_2(int value);
+    static int getDisplayBrightness(int display_bus);
     QVBoxLayout m_Layout_1;
     QVBoxLayout m_Layout_2;
     QHBoxLayout m_MainLayout;
