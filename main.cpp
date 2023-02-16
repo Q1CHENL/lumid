@@ -11,9 +11,6 @@ int main(int argc, char *argv[])
 
     return QApplication::exec();
 }
-//todo show current value
-//todo set brightness with current value instead of constant 10
-//todo do not exit but to tray
-//todo add desktop entry
 //todo solve bug when multiple at once
-//todo add second layout including slider and value for the second display
+//todo integrated info function
+//todo general slide which changes the two at same time
