@@ -14,3 +14,4 @@ int main(int argc, char *argv[])
 //todo solve bug when multiple at once
 //todo integrated info function
 //todo general slide which changes the two at same time
+//todo use threads

@@ -11,12 +11,12 @@
 #include <algorithm>
 
 int getNumDisplays();
-std::vector<std::string> getDisplayInfo();
+std::vector<std::string> getBusInDescendingOrder();
 
 Sliders::Sliders() {
     setWindowTitle("BD");
-    setFixedSize(100, 250);
-    buses = getDisplayInfo();
+    setFixedSize(150, 250);
+    buses = getBusInDescendingOrder();
 
     //change the path to yours
     //tray icon does not show using resource image
@@ -46,6 +46,20 @@ Sliders::Sliders() {
     m_valueLabel_2.setText(QString::number(currBrightness_1));
     m_valueLabel_2.setAlignment(Qt::AlignCenter);
 
+    //value label combine settings
+    m_valueLabel_combine.setFixedSize(30, 24);
+    m_valueLabel_combine.setFrameStyle(QFrame::NoFrame);
+    m_valueLabel_combine.setLineWidth(1);
+    m_valueLabel_combine.setText(QString::number(currBrightness_0));
+    m_valueLabel_combine.setAlignment(Qt::AlignCenter);
+
+    //slider combine settings
+    m_Slider_combine.setOrientation(Qt::Vertical);
+    m_Slider_combine.setRange(0, 100);
+    m_Slider_combine.setValue(currBrightness_0);
+    m_Slider_combine.setSingleStep(10);
+    m_Slider_combine.setTracking(false);
+
     //slider 1 settings
     m_Slider_1.setOrientation(Qt::Vertical);
     m_Slider_1.setRange(0, 100);
@@ -60,7 +74,13 @@ Sliders::Sliders() {
     m_Slider_2.setSingleStep(10);
     m_Slider_2.setTracking(false);
 
-    //general layout settings
+    //1st layout settings
+    m_Layout_combine.addWidget(&m_valueLabel_combine);
+    connect(&m_Slider_combine, &QSlider::valueChanged, this, &Sliders::on_value_changed_combine);
+    m_Layout_combine.addWidget(&m_Slider_combine);
+    m_Layout_combine.setAlignment(Qt::AlignHCenter);
+
+    //1st layout settings
     m_Layout_1.addWidget(&m_valueLabel_1);
     connect(&m_Slider_1, &QSlider::valueChanged, this, &Sliders::on_value_changed_0);
     m_Layout_1.addWidget(&m_Slider_1);
@@ -70,6 +90,7 @@ Sliders::Sliders() {
     m_Layout_2.addWidget(&m_Slider_2);
     connect(&m_Slider_2, &QSlider::valueChanged, this, &Sliders::on_value_changed_1);
 
+    m_MainLayout.addLayout(&m_Layout_combine);
     m_MainLayout.addLayout(&m_Layout_1);
     m_MainLayout.addLayout(&m_Layout_2);
     setLayout(&m_MainLayout);
@@ -99,6 +120,12 @@ void Sliders::on_value_changed_1(int value) {
     //Note that here sudo is the program, ddcutil is considered as an argument
     QProcess::startDetached("sudo", QStringList() << "ddcutil" << "setvcp" << "10" << arguments);
     m_valueLabel_2.setText(QString::number(value));
+}
+
+void Sliders::on_value_changed_combine(int value){
+    m_Slider_1.setValue(value);
+    m_Slider_2.setValue(value);
+    m_valueLabel_combine.setText(QString::number(value));
 }
 
 // from ChatGPT
@@ -142,7 +169,7 @@ int getNumDisplays() {
     return QGuiApplication::screens().count();
 }
 
-std::vector<std::string> getDisplayInfo() {
+std::vector<std::string> getBusInDescendingOrder() {
     std::vector<std::string> buses;
     // Run the ddcutil command to get the display info
     std::array<char, 128> buffer{};
