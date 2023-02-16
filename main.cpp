@@ -16,3 +16,4 @@ int main(int argc, char *argv[])
 //todo general slide which changes the two at same time
 //todo use threads
 //todo combine the on_value_changed methods using int para
+//todo simplify constructor of Sliders

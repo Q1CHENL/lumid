@@ -169,6 +169,7 @@ int getNumDisplays() {
     return QGuiApplication::screens().count();
 }
 
+// from ChatGPT
 std::vector<std::string> getBusInDescendingOrder() {
     std::vector<std::string> buses;
     // Run the ddcutil command to get the display info
