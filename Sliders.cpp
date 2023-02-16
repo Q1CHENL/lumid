@@ -11,12 +11,14 @@
 #include <algorithm>
 
 int getNumDisplays();
-std::vector<std::string> getBusInDescendingOrder();
 
 Sliders::Sliders() {
     setWindowTitle("BD");
     setFixedSize(150, 250);
-    buses = getBusInDescendingOrder();
+
+    info_name_bus_brightness = getDisplayInfo();
+    int currBrightness_0 = std::get<2>(info_name_bus_brightness.at(0));
+    int currBrightness_1 = std::get<2>(info_name_bus_brightness.at(1));
 
     //change the path to yours
     //tray icon does not show using resource image
@@ -28,9 +30,6 @@ Sliders::Sliders() {
 
     trayIcon.setContextMenu(trayMenu);
     trayIcon.show();
-
-    int currBrightness_0 = getDisplayBrightness(std::stoi(buses.at(0)));
-    int currBrightness_1 = getDisplayBrightness(std::stoi(buses.at(1)));
 
     //value label 1 settings
     m_valueLabel_1.setFixedSize(30, 24);
@@ -103,12 +102,11 @@ void Sliders::on_value_changed_0(int value) {
     QStringList arguments;
     //change the bus number after --bus to your monitors'
     //use sudo cat /dev/i2c* to list all buses
-    arguments << newValue << "--async" << "--bus" << QString::number(std::stoi(buses.at(0)));
+    arguments << newValue << "--async" << "--bus" << QString::fromStdString(std::get<1>(info_name_bus_brightness.at(0)));
     //Note that here sudo is the program, ddcutil is considered as an argument
     QProcess::startDetached("sudo", QStringList() << "ddcutil" << "setvcp" << "10" << arguments);
     m_valueLabel_1.setText(QString::number(value));
 }
-
 
 void Sliders::on_value_changed_1(int value) {
     QStringList args;
@@ -116,40 +114,16 @@ void Sliders::on_value_changed_1(int value) {
     QStringList arguments;
     //change the bus number after --bus to your monitors'
     //use sudo cat /dev/i2c* to list all buses
-    arguments << newValue << "--async" << "--bus" << QString::number(std::stoi(buses.at(1)));
+    arguments << newValue << "--async" << "--bus" << QString::fromStdString(std::get<1>(info_name_bus_brightness.at(1)));
     //Note that here sudo is the program, ddcutil is considered as an argument
     QProcess::startDetached("sudo", QStringList() << "ddcutil" << "setvcp" << "10" << arguments);
     m_valueLabel_2.setText(QString::number(value));
 }
 
-void Sliders::on_value_changed_combine(int value){
+void Sliders::on_value_changed_combine(int value) {
     m_Slider_1.setValue(value);
     m_Slider_2.setValue(value);
     m_valueLabel_combine.setText(QString::number(value));
-}
-
-// from ChatGPT
-int Sliders::getDisplayBrightness(int display_bus) {
-    std::string result;
-    std::string cmd = "sudo ddcutil getvcp 10 --bus " + std::to_string(display_bus);
-
-    FILE *pipe = popen(cmd.c_str(), "r");
-    if (!pipe) return -1;
-
-    char buffer[128];
-    while (!feof(pipe)) {
-        if (fgets(buffer, 128, pipe) != nullptr)
-            result += buffer;
-    }
-    pclose(pipe);
-
-    // Extract the brightness value from the output
-    int pos = (int) result.find("current value =   ") + 17;
-    std::string brightnessStr = result.substr(pos, 4);
-    int brightness = 0;
-    std::istringstream(brightnessStr) >> brightness;
-
-    return std::stoi(brightnessStr);
 }
 
 void Sliders::closeEvent(QCloseEvent *event) {
@@ -169,9 +143,10 @@ int getNumDisplays() {
     return QGuiApplication::screens().count();
 }
 
-// from ChatGPT
-std::vector<std::string> getBusInDescendingOrder() {
-    std::vector<std::string> buses;
+//<display name, bus, brightness>
+std::vector<std::tuple<std::string, std::string, int>> Sliders::getDisplayInfo() {
+    std::vector<std::tuple<std::string, std::string, int>> info;
+
     // Run the ddcutil command to get the display info
     std::array<char, 128> buffer{};
     std::string result;
@@ -188,9 +163,38 @@ std::vector<std::string> getBusInDescendingOrder() {
         // Get the display name
         std::size_t end_pos = result.find('\n', start_pos);
         std::string bus_number = result.substr(start_pos + 19, end_pos - start_pos - 19);
-        start_pos = end_pos + 1;
-        buses.emplace_back(bus_number);
+        //buses.emplace_back(bus_number);
+
+        //start_pos = end_pos + 1;
+        start_pos = result.find("Model:               ", end_pos);
+        end_pos = result.find("\n", start_pos);
+        std::string display_brand_name = result.substr(start_pos + 22, end_pos - start_pos - 22);
+        info.emplace_back(display_brand_name, bus_number, 0);
     }
-    std::sort(buses.begin(), buses.end(), [](std::string a, std::string b){return a > b;});
-    return buses;
+    std::sort(info.begin(), info.end(), [](std::tuple<std::string, std::string, int> a,
+                                           std::tuple<std::string, std::string, int> b) {
+        return std::get<1>(a) > std::get<1>(b);
+    });
+
+    int display_number = (int) info.size();
+    for (int i = 0; i < display_number; i++) {
+        std::string result_brightness;
+        std::string cmd = "sudo ddcutil getvcp 10 --bus " + std::get<1>(info.at(i));
+        FILE *pipe_brightness = popen(cmd.c_str(), "r");
+        //if (!pipe_brightness) return -1;
+        char buffer_brightness[128];
+        while (!feof(pipe_brightness)) {
+            if (fgets(buffer_brightness, 128, pipe_brightness) != nullptr)
+                result_brightness += buffer_brightness;
+        }
+        pclose(pipe_brightness);
+        // Extract the brightness value from the output
+        int pos = (int) result_brightness.find("current value =   ") + 18;
+        std::string brightnessStr = result_brightness.substr(pos, 3);
+        //trim space and assign
+        std::get<2>(info.at(i)) =
+                std::stoi(brightnessStr);
+    }
+
+    return info;
 }

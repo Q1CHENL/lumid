@@ -24,7 +24,7 @@ private:
     void on_value_changed_0(int value);
     void on_value_changed_1(int value);
     void on_value_changed_combine(int value);
-    static int getDisplayBrightness(int display_bus);
+    static std::vector<std::tuple<std::string, std::string, int>> getDisplayInfo();
     void closeEvent(QCloseEvent *event) override;
     QVBoxLayout m_Layout_combine;
     QVBoxLayout m_Layout_1;
@@ -36,7 +36,7 @@ private:
     QLabel m_valueLabel_combine;
     QLabel m_valueLabel_1;
     QLabel m_valueLabel_2;
-    std::vector<std::string> buses;
+    std::vector<std::tuple<std::string, std::string, int>> info_name_bus_brightness;
 };
 
 #endif //SLIDER_SLIDER_H
