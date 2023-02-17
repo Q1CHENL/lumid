@@ -6,4 +6,3 @@ Note:
 1. You may need to change the Qt version in CMakeLists.txt to the one you are using.
 2. ddcutil requires sudo. You may need to adjust your system settings to avoid entering password. One method could be: 
 `sudo visudo` in terminal, comment out `%wheel        ALL=(ALL)       ALL` and comment in `%wheel  ALL=(ALL)       NOPASSWD: ALL`.
-3. You may need to change the bus number to yours in function on_value_changed_0() and getDisplayBrightness() in Sliders.cpp
