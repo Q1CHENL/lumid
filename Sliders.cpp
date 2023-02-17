@@ -13,8 +13,8 @@
 int getNumDisplays();
 
 Sliders::Sliders() {
-    setWindowTitle("BD");
-    setFixedSize(150, 250);
+    setWindowTitle("DarkerBrightness");
+    setFixedSize(400, 300);
 
     info_name_bus_brightness = getDisplayInfo();
     int currBrightness_0 = std::get<2>(info_name_bus_brightness.at(0));
@@ -74,20 +74,40 @@ Sliders::Sliders() {
     m_Slider_2.setTracking(false);
 
     //1st layout settings
-    m_Layout_combine.addWidget(&m_valueLabel_combine);
+    m_Layout_combine.addWidget(&m_valueLabel_combine, 0, Qt::AlignHCenter);
     connect(&m_Slider_combine, &QSlider::valueChanged, this, &Sliders::on_value_changed_combine);
-    m_Layout_combine.addWidget(&m_Slider_combine);
+    m_Layout_combine.addWidget(&m_Slider_combine, 0, Qt::AlignHCenter);
+    auto* primary_display= new QLabel("General");
+    primary_display->setFixedSize(90, 35);
+    primary_display->setFrameStyle(QFrame::NoFrame);
+    primary_display->setLineWidth(1);
+    primary_display->setAlignment(Qt::AlignCenter);
+    m_Layout_combine.addWidget(primary_display, 0, Qt::AlignHCenter);
     m_Layout_combine.setAlignment(Qt::AlignHCenter);
 
     //1st layout settings
-    m_Layout_1.addWidget(&m_valueLabel_1);
+    m_Layout_1.addWidget(&m_valueLabel_1, 0, Qt::AlignHCenter);
     connect(&m_Slider_1, &QSlider::valueChanged, this, &Sliders::on_value_changed_0);
-    m_Layout_1.addWidget(&m_Slider_1);
+    m_Layout_1.addWidget(&m_Slider_1, 0, Qt::AlignHCenter);
+    auto* display_0 = new QLabel(QString::fromStdString(std::get<0>(info_name_bus_brightness.at(0)) + "\n(Primary)"));
+    display_0->setFixedSize(90, 35);
+    display_0->setFrameStyle(QFrame::NoFrame);
+    display_0->setLineWidth(1);
+    display_0->setAlignment(Qt::AlignCenter);
+    m_Layout_1.addWidget(display_0, 0, Qt::AlignHCenter);
     m_Layout_1.setAlignment(Qt::AlignHCenter);
 
-    m_Layout_2.addWidget(&m_valueLabel_2);
-    m_Layout_2.addWidget(&m_Slider_2);
+    m_Layout_2.addWidget(&m_valueLabel_2, 0, Qt::AlignHCenter);
+    m_Layout_2.addWidget(&m_Slider_2, 0, Qt::AlignHCenter);
     connect(&m_Slider_2, &QSlider::valueChanged, this, &Sliders::on_value_changed_1);
+    auto* display_1 = new QLabel(QString::fromStdString(std::get<0>(info_name_bus_brightness.at(1))));
+    display_1->setFixedSize(130, 35);
+    display_1->setFrameStyle(QFrame::NoFrame);
+    display_1->setLineWidth(1);
+    display_1->setAlignment(Qt::AlignCenter);
+
+    m_Layout_2.addWidget(display_1, 0, Qt::AlignHCenter);
+    m_Layout_2.setAlignment(Qt::AlignHCenter);
 
     m_MainLayout.addLayout(&m_Layout_combine);
     m_MainLayout.addLayout(&m_Layout_1);
