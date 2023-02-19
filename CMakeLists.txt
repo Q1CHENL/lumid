@@ -13,8 +13,8 @@ find_package(Qt5 COMPONENTS
         Widgets
         REQUIRED)
 
-add_executable(Slider main.cpp Sliders.cpp Sliders.hpp SlidersHBoxLayout.cpp SlidersHBoxLayout.h)
-target_link_libraries(Slider
+add_executable(darkerbrightness main.cpp Sliders.cpp Sliders.hpp SlidersHBoxLayout.cpp SlidersHBoxLayout.h)
+target_link_libraries(darkerbrightness
         Qt5::Core
         Qt5::Gui
         Qt5::Widgets

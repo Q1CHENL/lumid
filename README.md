@@ -1,6 +1,6 @@
 # DarkerBrightness
-A simple Qt GUI that adjusts the display brightness for Linux desktop using ddcutil.
-![UI](UIScreenshot.png)
+A simple Qt GUI that adjusts the display brightness for Linux desktop using ddcutil.<br />
+![UI](focus.png) ![UI](showAll.png)
 
 Note: 
 1. You may need to change the Qt version in CMakeLists.txt to the one you are using.
