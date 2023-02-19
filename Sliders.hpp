@@ -43,6 +43,7 @@ private:
     void on_value_changed_combine(int value);
     static std::vector<std::tuple<std::string, std::string, int>> getDisplayInfo();
     void closeEvent(QCloseEvent *event) override;
+
 };
 
 #endif //SLIDER_SLIDER_H
