@@ -5,12 +5,10 @@
 #include "Sliders.hpp"
 #include <QCloseEvent>
 #include <QMenu>
-#include <QDebug>
 #include <QScreen>
 #include <iostream>
 #include <algorithm>
 #include <QMenuBar>
-#include <QSplitter>
 #include <QxtGlobalShortcut>
 #include <QTimer>
 

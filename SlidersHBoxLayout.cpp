@@ -2,7 +2,7 @@
 // Created by liuqichen on 2/19/23.
 //
 
-#include "SlidersHBoxLayout.h"
+#include "SlidersHBoxLayout.hpp"
 QSize SlidersHBoxLayout::sizeHint() const
 {
 QSize hint = QHBoxLayout::sizeHint();

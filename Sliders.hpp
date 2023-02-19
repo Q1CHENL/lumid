@@ -14,7 +14,7 @@
 #include <QSystemTrayIcon>
 #include <QPushButton>
 #include <QTimer>
-#include "SlidersHBoxLayout.h"
+#include "SlidersHBoxLayout.hpp"
 
 class Sliders : public QWidget
 {

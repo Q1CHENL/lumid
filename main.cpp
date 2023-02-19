@@ -12,6 +12,4 @@ int main(int argc, char *argv[])
     return QApplication::exec();
 }
 //todo solve bug when multiple at once
-//todo use threads
-//todo combine the on_value_changed methods using int para
 //todo simplify constructor of Sliders
