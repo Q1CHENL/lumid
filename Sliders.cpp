@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <QMenuBar>
 #include <QSplitter>
+#include <QxtGlobalShortcut>
 
 int getNumDisplays();
 
@@ -82,7 +83,7 @@ Sliders::Sliders() {
     m_Layout_combine.addWidget(&m_valueLabel_combine, 0, Qt::AlignHCenter);
     connect(&m_Slider_combine, &QSlider::valueChanged, this, &Sliders::on_value_changed_combine);
     m_Layout_combine.addWidget(&m_Slider_combine, 0, Qt::AlignHCenter);
-    auto* primary_display= new QLabel("General");
+    auto *primary_display = new QLabel("General");
     primary_display->setFixedSize(90, 35);
     primary_display->setFrameStyle(QFrame::NoFrame);
     primary_display->setLineWidth(1);
@@ -94,7 +95,7 @@ Sliders::Sliders() {
     m_Layout_1.addWidget(&m_valueLabel_1, 0, Qt::AlignHCenter);
     connect(&m_Slider_1, &QSlider::valueChanged, this, &Sliders::on_value_changed_0);
     m_Layout_1.addWidget(&m_Slider_1, 0, Qt::AlignHCenter);
-    auto* display_0 = new QLabel(QString::fromStdString(std::get<0>(info_name_bus_brightness.at(0)) + "\n(Primary)"));
+    auto *display_0 = new QLabel(QString::fromStdString(std::get<0>(info_name_bus_brightness.at(0)) + "\n(Primary)"));
     display_0->setFixedSize(90, 35);
     display_0->setFrameStyle(QFrame::NoFrame);
     display_0->setLineWidth(1);
@@ -107,7 +108,7 @@ Sliders::Sliders() {
     m_Layout_2.addWidget(&m_valueLabel_2, 0, Qt::AlignHCenter);
     m_Layout_2.addWidget(&m_Slider_2, 0, Qt::AlignHCenter);
     connect(&m_Slider_2, &QSlider::valueChanged, this, &Sliders::on_value_changed_1);
-    auto* display_1 = new QLabel(QString::fromStdString(std::get<0>(info_name_bus_brightness.at(1))));
+    auto *display_1 = new QLabel(QString::fromStdString(std::get<0>(info_name_bus_brightness.at(1))));
     display_1->setFixedSize(130, 35);
     display_1->setFrameStyle(QFrame::NoFrame);
     display_1->setLineWidth(1);
@@ -123,12 +124,25 @@ Sliders::Sliders() {
 
     hideButton.setText("Show all");
     hideButton.setParent(this);
-    connect(&hideButton, &QPushButton::clicked, this, [=](){
+    connect(&hideButton, &QPushButton::clicked, this, [=]() {
         Sliders::hideOtherSliders(display_0, display_1);
     });
 
     m_Layout_combine.addWidget(&hideButton);
     m_MainLayout.setSizeConstraint(QLayout::SetFixedSize);
+
+    auto *shortcutF5 = new QxtGlobalShortcut(QKeySequence(Qt::Key_F5), this);
+    auto *shortcutF6 = new QxtGlobalShortcut(QKeySequence(Qt::Key_F6), this);
+
+    // Connect shortcuts to slider value change signal
+    QObject::connect(shortcutF5, &QxtGlobalShortcut::activated, &m_Slider_combine, [=]() {
+        m_Slider_combine.setValue(m_Slider_combine.value() - 10);
+    });
+    QObject::connect(shortcutF6, &QxtGlobalShortcut::activated, &m_Slider_combine, [=]() {
+        m_Slider_combine.setValue(m_Slider_combine.value() + 10);
+    });
+
+    m_Slider_combine.installEventFilter(this);
     setLayout(&m_MainLayout);
 }
 
@@ -136,9 +150,8 @@ void Sliders::on_value_changed_0(int value) {
     QStringList args;
     QString newValue = QString::number(value);
     QStringList arguments;
-    //change the bus number after --bus to your monitors'
-    //use sudo cat /dev/i2c* to list all buses
-    arguments << newValue << "--async" << "--bus" << QString::fromStdString(std::get<1>(info_name_bus_brightness.at(0)));
+    arguments << newValue << "--async" << "--bus"
+              << QString::fromStdString(std::get<1>(info_name_bus_brightness.at(0)));
     //Note that here sudo is the program, ddcutil is considered as an argument
     QProcess::startDetached("sudo", QStringList() << "ddcutil" << "setvcp" << "10" << arguments);
     m_valueLabel_1.setText(QString::number(value));
@@ -148,9 +161,8 @@ void Sliders::on_value_changed_1(int value) {
     QStringList args;
     QString newValue = QString::number(value);
     QStringList arguments;
-    //change the bus number after --bus to your monitors'
-    //use sudo cat /dev/i2c* to list all buses
-    arguments << newValue << "--async" << "--bus" << QString::fromStdString(std::get<1>(info_name_bus_brightness.at(1)));
+    arguments << newValue << "--async" << "--bus"
+              << QString::fromStdString(std::get<1>(info_name_bus_brightness.at(1)));
     //Note that here sudo is the program, ddcutil is considered as an argument
     QProcess::startDetached("sudo", QStringList() << "ddcutil" << "setvcp" << "10" << arguments);
     m_valueLabel_2.setText(QString::number(value));
@@ -203,7 +215,7 @@ std::vector<std::tuple<std::string, std::string, int>> Sliders::getDisplayInfo()
 
         //start_pos = end_pos + 1;
         start_pos = result.find("Model:               ", end_pos);
-        end_pos = result.find("\n", start_pos);
+        end_pos = result.find('\n', start_pos);
         std::string display_brand_name = result.substr(start_pos + 22, end_pos - start_pos - 22);
         info.emplace_back(display_brand_name, bus_number, 0);
     }
@@ -234,9 +246,9 @@ std::vector<std::tuple<std::string, std::string, int>> Sliders::getDisplayInfo()
 
     return info;
 }
-void Sliders::hideOtherSliders(QLabel* display_0, QLabel* display_1)
-{
-    if(other_sliders_hidden){
+
+void Sliders::hideOtherSliders(QLabel *display_0, QLabel *display_1) {
+    if (other_sliders_hidden) {
         other_sliders_hidden = false;
         m_Slider_1.setVisible(true);
         m_Slider_2.setVisible(true);
@@ -260,4 +272,3 @@ void Sliders::hideOtherSliders(QLabel* display_0, QLabel* display_1)
     hideButton.setText("Show all");
     m_MainLayout.setSizeConstraint(QLayout::SetFixedSize);
 }
-

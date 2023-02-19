@@ -13,10 +13,18 @@ find_package(Qt5 COMPONENTS
         Widgets
         REQUIRED)
 
+include_directories(/usr/include/qt5/QxtWidgets)
+include_directories(/usr/include/qt5/QxtCore)
+
+find_library(QTX_CORE_LIB QxtCore-qt5 HINTS /usr/lib64/)
+find_library(QTX_WIDGETS_LIB QxtWidgets-qt5 HINTS /usr/lib64/)
+
 add_executable(darkerbrightness main.cpp Sliders.cpp Sliders.hpp SlidersHBoxLayout.cpp SlidersHBoxLayout.h)
 target_link_libraries(darkerbrightness
         Qt5::Core
         Qt5::Gui
         Qt5::Widgets
+        ${QTX_CORE_LIB}
+        ${QTX_WIDGETS_LIB}
         )
 
