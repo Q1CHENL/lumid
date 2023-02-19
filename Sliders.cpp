@@ -12,12 +12,16 @@
 #include <QMenuBar>
 #include <QSplitter>
 #include <QxtGlobalShortcut>
+#include <QTimer>
 
 int getNumDisplays();
 
 Sliders::Sliders() {
     setWindowTitle(" ");
     setFixedSize(400, 500);
+    setWindowFlags(Qt::Window | Qt::WindowStaysOnTopHint);
+
+    connect(&m_timer, SIGNAL(timeout()), this, SLOT(hide()));
 
     info_name_bus_brightness = getDisplayInfo();
     int currBrightness_0 = std::get<2>(info_name_bus_brightness.at(0));
@@ -135,11 +139,18 @@ Sliders::Sliders() {
     auto *shortcutF6 = new QxtGlobalShortcut(QKeySequence(Qt::Key_F6), this);
 
     // Connect shortcuts to slider value change signal
+    // Qxt will hide keyPressEvent()
     QObject::connect(shortcutF5, &QxtGlobalShortcut::activated, &m_Slider_combine, [=]() {
+        show();
         m_Slider_combine.setValue(m_Slider_combine.value() - 10);
+        m_timer.stop();
+        m_timer.start(2500); // start the timer with 1 second timeout
     });
     QObject::connect(shortcutF6, &QxtGlobalShortcut::activated, &m_Slider_combine, [=]() {
+        show();
         m_Slider_combine.setValue(m_Slider_combine.value() + 10);
+        m_timer.stop();
+        m_timer.start(2500); // start the timer with 1 second timeout
     });
 
     m_Slider_combine.installEventFilter(this);
@@ -243,7 +254,6 @@ std::vector<std::tuple<std::string, std::string, int>> Sliders::getDisplayInfo()
         std::get<2>(info.at(i)) =
                 std::stoi(brightnessStr);
     }
-
     return info;
 }
 

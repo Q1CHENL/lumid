@@ -13,6 +13,7 @@
 #include <QLabel>
 #include <QSystemTrayIcon>
 #include <QPushButton>
+#include <QTimer>
 #include "SlidersHBoxLayout.h"
 
 class Sliders : public QWidget
@@ -36,6 +37,7 @@ private:
     QLabel m_valueLabel_2;
     QPushButton hideButton;
     std::vector<std::tuple<std::string, std::string, int>> info_name_bus_brightness;
+    QTimer m_timer;
 
     void hideOtherSliders(QLabel* display_0, QLabel* display_1);
     void on_value_changed_0(int value);
@@ -43,7 +45,6 @@ private:
     void on_value_changed_combine(int value);
     static std::vector<std::tuple<std::string, std::string, int>> getDisplayInfo();
     void closeEvent(QCloseEvent *event) override;
-
 };
 
 #endif //SLIDER_SLIDER_H
