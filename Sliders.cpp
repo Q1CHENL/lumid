@@ -9,12 +9,14 @@
 #include <QScreen>
 #include <iostream>
 #include <algorithm>
+#include <QMenuBar>
+#include <QSplitter>
 
 int getNumDisplays();
 
 Sliders::Sliders() {
-    setWindowTitle("DarkerBrightness");
-    setFixedSize(400, 300);
+    setWindowTitle(" ");
+    setFixedSize(400, 500);
 
     info_name_bus_brightness = getDisplayInfo();
     int currBrightness_0 = std::get<2>(info_name_bus_brightness.at(0));
@@ -27,7 +29,6 @@ Sliders::Sliders() {
     auto *trayMenu = new QMenu(this);
     trayMenu->addAction("Open", this, &Sliders::show);
     trayMenu->addAction("Exit", this, &Sliders::onExit);
-
     trayIcon.setContextMenu(trayMenu);
     trayIcon.show();
 
@@ -37,6 +38,7 @@ Sliders::Sliders() {
     m_valueLabel_1.setLineWidth(1);
     m_valueLabel_1.setText(QString::number(currBrightness_0));
     m_valueLabel_1.setAlignment(Qt::AlignCenter);
+    m_valueLabel_1.setVisible(false);
 
     //value label 2 settings
     m_valueLabel_2.setFixedSize(30, 24);
@@ -44,6 +46,7 @@ Sliders::Sliders() {
     m_valueLabel_2.setLineWidth(1);
     m_valueLabel_2.setText(QString::number(currBrightness_1));
     m_valueLabel_2.setAlignment(Qt::AlignCenter);
+    m_valueLabel_2.setVisible(false);
 
     //value label combine settings
     m_valueLabel_combine.setFixedSize(30, 24);
@@ -65,6 +68,7 @@ Sliders::Sliders() {
     m_Slider_1.setValue(currBrightness_0);
     m_Slider_1.setSingleStep(10);
     m_Slider_1.setTracking(false);
+    m_Slider_1.setVisible(false);
 
     //Slider 2 settings
     m_Slider_2.setOrientation(Qt::Vertical);
@@ -72,6 +76,7 @@ Sliders::Sliders() {
     m_Slider_2.setValue(currBrightness_1);
     m_Slider_2.setSingleStep(10);
     m_Slider_2.setTracking(false);
+    m_Slider_2.setVisible(false);
 
     //1st layout settings
     m_Layout_combine.addWidget(&m_valueLabel_combine, 0, Qt::AlignHCenter);
@@ -94,9 +99,11 @@ Sliders::Sliders() {
     display_0->setFrameStyle(QFrame::NoFrame);
     display_0->setLineWidth(1);
     display_0->setAlignment(Qt::AlignCenter);
+    display_0->setVisible(false);
     m_Layout_1.addWidget(display_0, 0, Qt::AlignHCenter);
     m_Layout_1.setAlignment(Qt::AlignHCenter);
 
+    //2nd layout settings
     m_Layout_2.addWidget(&m_valueLabel_2, 0, Qt::AlignHCenter);
     m_Layout_2.addWidget(&m_Slider_2, 0, Qt::AlignHCenter);
     connect(&m_Slider_2, &QSlider::valueChanged, this, &Sliders::on_value_changed_1);
@@ -105,15 +112,24 @@ Sliders::Sliders() {
     display_1->setFrameStyle(QFrame::NoFrame);
     display_1->setLineWidth(1);
     display_1->setAlignment(Qt::AlignCenter);
-
+    display_1->setVisible(false);
     m_Layout_2.addWidget(display_1, 0, Qt::AlignHCenter);
     m_Layout_2.setAlignment(Qt::AlignHCenter);
 
+    //add layout to main
     m_MainLayout.addLayout(&m_Layout_combine);
     m_MainLayout.addLayout(&m_Layout_1);
     m_MainLayout.addLayout(&m_Layout_2);
-    setLayout(&m_MainLayout);
 
+    hideButton.setText("Show all");
+    hideButton.setParent(this);
+    connect(&hideButton, &QPushButton::clicked, this, [=](){
+        Sliders::hideOtherSliders(display_0, display_1);
+    });
+
+    m_Layout_combine.addWidget(&hideButton);
+    m_MainLayout.setSizeConstraint(QLayout::SetFixedSize);
+    setLayout(&m_MainLayout);
 }
 
 void Sliders::on_value_changed_0(int value) {
@@ -218,3 +234,30 @@ std::vector<std::tuple<std::string, std::string, int>> Sliders::getDisplayInfo()
 
     return info;
 }
+void Sliders::hideOtherSliders(QLabel* display_0, QLabel* display_1)
+{
+    if(other_sliders_hidden){
+        other_sliders_hidden = false;
+        m_Slider_1.setVisible(true);
+        m_Slider_2.setVisible(true);
+        m_valueLabel_1.setVisible(true);
+        m_valueLabel_2.setVisible(true);
+        display_0->setVisible(true);
+        display_1->setVisible(true);
+        hideButton.setText("Focus");
+        setWindowTitle("DarkerBrightness");
+        return;
+    }
+    // hide the other two sliders
+    other_sliders_hidden = true;
+    m_Slider_1.setVisible(false);
+    m_Slider_2.setVisible(false);
+    m_valueLabel_1.setVisible(false);
+    m_valueLabel_2.setVisible(false);
+    display_0->setVisible(false);
+    display_1->setVisible(false);
+    setWindowTitle(" ");
+    hideButton.setText("Show all");
+    m_MainLayout.setSizeConstraint(QLayout::SetFixedSize);
+}
+
