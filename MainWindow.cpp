@@ -78,8 +78,8 @@ void MainWindow::onExit() {
     QCoreApplication::quit();
 }
 
-//<display name, bus, brightness>
 void MainWindow::initAllLayouts() {
+    // <display name, bus, brightness>
     std::vector<std::tuple<std::string, std::string, int>> info;
 
     // Run the ddcutil command to get the display info
@@ -108,8 +108,8 @@ void MainWindow::initAllLayouts() {
         return std::get<1>(a) > std::get<1>(b);
     });
 
-    int displayNum = (int) info.size();
-    for (int i = 0; i < displayNum; i++) {
+    displayCount = (int) info.size();
+    for (int i = 0; i < displayCount; i++) {
         std::string result_brightness;
         std::string cmd = "sudo ddcutil getvcp 10 --bus " + std::get<1>(info.at(i));
         FILE *pipe_brightness = popen(cmd.c_str(), "r");
@@ -135,7 +135,7 @@ void MainWindow::initAllLayouts() {
     initLayout(subLayoutsVex.at(0).get(), info, 0, true);
     subLayoutsVex.at(0)->m_DisplayNameLabel.setText("General");
     connect(&(subLayoutsVex.at(0)->m_Slider), &QSlider::valueChanged, this, [=](int value) {
-        for (int i = 0; i < displayNum; ++i) {
+        for (int i = 0; i < displayCount; ++i) {
         subLayoutsVex.at(i+1)->m_Slider.setValue(value);
         }
         subLayoutsVex.at(0)->m_BrightnessLabel.setText(QString::number(value));

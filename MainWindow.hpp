@@ -29,6 +29,7 @@ private:
     SlidersHBoxLayout m_MainLayout;
     QPushButton hideButton;
     QTimer m_Timer;
+    int displayCount{};
 
     std::vector<std::unique_ptr<SliderWithLabelsLayout>> subLayoutsVex;
 
