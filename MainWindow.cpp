@@ -24,7 +24,7 @@ MainWindow::MainWindow() {
 
     //change the path to yours
     //tray icon does not show using resource image
-    trayIcon.setIcon(QIcon("/usr/share/icons/darkerbrightness.png"));
+    trayIcon.setIcon(QIcon("/usr/share/icons/darkerbrightness-2nd-version.png"));
 
     auto *trayMenu = new QMenu(this);
     trayMenu->addAction("Open", this, &MainWindow::show);
