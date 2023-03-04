@@ -3,6 +3,7 @@
 //
 #include <regex>
 #include "MainWindow.hpp"
+#include "BrightnessSlider.hpp"
 #include <QCloseEvent>
 #include <QMenu>
 #include <QScreen>
@@ -18,7 +19,7 @@ MainWindow::MainWindow() {
     m_MainLayout.setSizeConstraint(QLayout::SetFixedSize);
     setWindowFlags(Qt::Window | Qt::WindowStaysOnTopHint);
     initAllLayouts();
-    QSlider *mainSlider = generalSlider();
+    BrightnessSlider *mainSlider = generalSlider();
     connect(&m_Timer, SIGNAL(timeout()), this, SLOT(hide()));
 
     //change the path to yours
@@ -34,7 +35,7 @@ MainWindow::MainWindow() {
     //add layout to main
     addLayouts();
 
-    hideButton.setText("Focus");
+    hideButton.setText("Show All");
     hideButton.setParent(this);
     connect(&hideButton, &QPushButton::clicked, this, [=]() {
         MainWindow::hideOtherSliders();
@@ -48,21 +49,24 @@ MainWindow::MainWindow() {
     // Connect shortcuts to slider value change signal
     // Qxt will hide keyPressEvent()
     QObject::connect(shortcutF5, &QxtGlobalShortcut::activated, mainSlider, [=]() {
-        show();
-        mainSlider->setValue(mainSlider->value() - 10);
-        m_Timer.stop();
-        m_Timer.start(2500); // start the timer with 1 second timeout
+        shortCutsKeyPressed(mainSlider, -10);
     });
 
     QObject::connect(shortcutF6, &QxtGlobalShortcut::activated, mainSlider, [=]() {
-        show();
-        mainSlider->setValue(mainSlider->value() + 10);
-        m_Timer.stop();
-        m_Timer.start(2500); // start the timer with 1 second timeout
+        shortCutsKeyPressed(mainSlider, 10);
     });
 
-    mainSlider->installEventFilter(this);
+    installEventFilter(this);
+    connect(qApp, &QApplication::focusChanged, this, &MainWindow::onFocusChanged);
+
     setLayout(&m_MainLayout);
+}
+
+void MainWindow::shortCutsKeyPressed(BrightnessSlider *slider, int value) {
+    show();
+    slider->setValue(slider->value() + value);
+    m_Timer.stop();
+    m_Timer.start(3000); // start the timer with 3 second timeout
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
@@ -136,7 +140,7 @@ void MainWindow::initAllLayouts() {
     subLayoutsVex.at(0)->m_DisplayNameLabel.setText("General");
     connect(&(subLayoutsVex.at(0)->m_Slider), &QSlider::valueChanged, this, [=](int value) {
         for (int i = 0; i < displayCount; ++i) {
-        subLayoutsVex.at(i+1)->m_Slider.setValue(value);
+            subLayoutsVex.at(i + 1)->m_Slider.setValue(value);
         }
         subLayoutsVex.at(0)->m_BrightnessLabel.setText(QString::number(value));
     });
@@ -168,9 +172,9 @@ void MainWindow::initLayout(SliderWithLabelsLayout *layout,
                             std::vector<std::tuple<std::string, std::string, int>> info,
                             int index,
                             bool visible
-                            ) {
+) {
     std::string displayName = std::get<0>(info.at(index));
-    if(index == 0){
+    if (index == 0) {
         displayName += "\n(Primary)";
     }
     layout->m_DisplayNameLabel.setText(QString::fromStdString(displayName));
@@ -187,6 +191,7 @@ void MainWindow::initLayout(SliderWithLabelsLayout *layout,
     layout->m_Slider.setSingleStep(10);
     layout->m_Slider.setTracking(false);
     layout->m_Slider.setVisible(visible);
+    layout->m_Slider.setTimer(&m_Timer);
 
     //brightness value label
     layout->m_BrightnessLabel.setText(QString::number(std::get<2>(info.at(index))));
@@ -202,38 +207,72 @@ void MainWindow::initLayout(SliderWithLabelsLayout *layout,
 }
 
 void MainWindow::hideOtherSliders() {
-
     if (other_sliders_hidden) {
-        for (int i = 1; i < subLayoutsVex.size(); i++) {
-            other_sliders_hidden = false;
-            switchVisibility(subLayoutsVex.at(i).get(), true);
-        }
-        hideButton.setText("Focus");
-        setWindowTitle("DarkerBrightness");
+        performHideAndChangeButtonText("Focus",
+                                       "DarkerBrightness",
+                                       other_sliders_hidden,
+                                       &hideButton,
+                                       &m_MainLayout,
+                                       &subLayoutsVex);
         return;
     }
-    for (int i = 1; i < subLayoutsVex.size(); i++) {
-        other_sliders_hidden = true;
-        switchVisibility(subLayoutsVex.at(i).get(), false);
-        hideButton.setText("Show all");
-        setWindowTitle(" ");
-        m_MainLayout.setSizeConstraint(QLayout::SetFixedSize);
-    }
+    performHideAndChangeButtonText("Show All",
+                                   " ",
+                                   other_sliders_hidden,
+                                   &hideButton,
+                                   &m_MainLayout,
+                                   &subLayoutsVex);
 }
 
-void MainWindow::switchVisibility(SliderWithLabelsLayout* layout, bool visible){
+void MainWindow::performHideAndChangeButtonText(const std::string &buttonText,
+                                                const std::string &windowTitle,
+                                                bool currentlyHidden,
+                                                QPushButton *button,
+                                                SlidersHBoxLayout *layout,
+                                                std::vector<std::unique_ptr<SliderWithLabelsLayout>> *vex
+) {
+    for (int i = 1; i < vex->size(); i++) {
+        other_sliders_hidden = !currentlyHidden;
+        switchVisibility(vex->at(i).get(), currentlyHidden);
+    }
+    layout->setSizeConstraint(QLayout::SetFixedSize);
+    button->setText(QString::fromStdString(buttonText));
+    setWindowTitle(QString::fromStdString(windowTitle));
+}
+
+void MainWindow::switchVisibility(SliderWithLabelsLayout *layout, bool visible) {
     layout->m_Slider.setVisible(visible);
     layout->m_BrightnessLabel.setVisible(visible);
     layout->m_DisplayNameLabel.setVisible(visible);
 }
 
-QSlider *MainWindow::generalSlider() {
+BrightnessSlider *MainWindow::generalSlider() {
     return &subLayoutsVex.at(0).get()->m_Slider;
 }
 
 void MainWindow::addLayouts() {
-    for (const auto & i : subLayoutsVex) {
+    for (const auto &i: subLayoutsVex) {
         m_MainLayout.addLayout(i.get());
     }
 }
 
+// restart timer when click on main window
+bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
+    if (event->type() == QEvent::MouseButtonPress && (obj == this || obj == generalSlider())) {
+        // Do something when the slider is clicked
+        show();
+        m_Timer.stop();
+        m_Timer.start(5000);
+        return true;
+    }
+    return QObject::eventFilter(obj, event);
+}
+
+void MainWindow::onFocusChanged(QWidget *oldWidget, QWidget *newWidget) {
+    if (newWidget == this || newWidget == generalSlider()) {
+        // Do something when the main window or slider gets focus
+        show();
+        m_Timer.stop();
+        m_Timer.start(5000);
+    }
+}

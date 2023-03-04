@@ -9,12 +9,13 @@
 #include <QVBoxLayout>
 #include <QSlider>
 #include <QLabel>
+#include "BrightnessSlider.hpp"
 
 class SliderWithLabelsLayout : public QVBoxLayout {
 public:
     SliderWithLabelsLayout();
 
-    QSlider m_Slider;
+    BrightnessSlider m_Slider;
     QLabel m_BrightnessLabel;
     QLabel m_DisplayNameLabel;
     std::string displayBus;

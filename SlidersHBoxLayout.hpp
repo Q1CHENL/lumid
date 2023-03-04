@@ -10,8 +10,8 @@
 
 class SlidersHBoxLayout : public QHBoxLayout{
 public:
-    QSize sizeHint() const override;
+    //[[nodiscard]] is an attribute specifier in C++ that indicates that a function's return value should not be ignored.
+    [[nodiscard]] QSize sizeHint() const override;
 };
-
 
 #endif //DARKERBRIGHTNESS_SLIDERSHBOXLAYOUT_HPP

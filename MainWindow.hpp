@@ -31,15 +31,26 @@ private:
     QTimer m_Timer;
     int displayCount{};
 
+    BrightnessSlider* generalSlider();
     std::vector<std::unique_ptr<SliderWithLabelsLayout>> subLayoutsVex;
-
+    void onFocusChanged(QWidget *oldWidget, QWidget *newWidget);
     void hideOtherSliders();
     void initAllLayouts();
     void addLayouts();
     void closeEvent(QCloseEvent *event) override;
-    QSlider* generalSlider();
     static void switchVisibility(SliderWithLabelsLayout* layout, bool visible);
     void initLayout(SliderWithLabelsLayout* layout, std::vector<std::tuple<std::string, std::string, int>> info, int index, bool visible);
+    bool eventFilter(QObject *obj, QEvent *event) override;
+    void shortCutsKeyPressed(BrightnessSlider* slider, int value);
+    void performHideAndChangeButtonText(const std::string& buttonText,
+                                        const std::string& windowTitle,
+                                        bool currentHidden,
+                                        QPushButton* button,
+                                        SlidersHBoxLayout* layout,
+                                        std::vector<std::unique_ptr<SliderWithLabelsLayout>>* subLayoutsVex
+    );
+
+
 };
 
 #endif //SLIDER_SLIDER_H
