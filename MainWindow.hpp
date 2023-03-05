@@ -34,7 +34,7 @@ private:
     ViewChangeButton hideButton;
     QTimer m_Timer;
     QTimer click_tmr;
-    QMenu trayMenu;
+    TrayMenu m_TrayMenu;
     int displayCount{};
 
     BrightnessSlider* generalSlider();

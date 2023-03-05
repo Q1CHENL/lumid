@@ -3,6 +3,9 @@
 //
 
 #include "Wrappers.hpp"
+#include "MainWindow.hpp"
+#include <QSystemTrayIcon>
+
 
 void Wrappers::BrightnessSlider::setTimer(QTimer *timer) {
     m_Timer = timer;
@@ -69,3 +72,18 @@ void Wrappers::restartTimerForSecs(QTimer *timer, int secs) {
 // possible, it's a good idea to use signals and slots instead of event
 // filters.
 
+Wrappers::TrayMenu::TrayMenu() {
+    connect(m_Open.get(), &QAction::triggered, this, &MainWindow::show);
+    connect(m_Preferences.get(), &QAction::triggered, this, [&]() {
+        m_PreferencesWindow->show();
+    });
+    connect(m_Exit.get(), &QAction::triggered, this, &QCoreApplication::quit);
+    addAction(m_Open.get());
+    addAction(m_Preferences.get());
+    addAction(m_Exit.get());
+
+}
+
+PreferencesWindow::PreferencesWindow() {
+
+}

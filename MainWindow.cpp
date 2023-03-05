@@ -28,12 +28,14 @@ MainWindow::MainWindow() {
     //tray icon does not show using resource image
     trayIcon.setIcon(QIcon("/usr/share/icons/darkerbrightness-2nd-version.png"));
 
-    trayMenu.addAction("Open", this, [=]() {
-        show();
-        restartTimerForSecs(&m_Timer, 5);
-    });
-    trayMenu.addAction("Exit", this, &MainWindow::onExit);
-    trayIcon.setContextMenu(&trayMenu);
+//    m_TrayMenu.addAction("Open", this, [=]() {
+//        show();
+//        restartTimerForSecs(&m_Timer, 5);
+//    });
+//    m_TrayMenu.addAction("Preferences", this, [=](){
+//    });
+//    m_TrayMenu.addAction("Exit", this, &MainWindow::onExit);
+    trayIcon.setContextMenu(&m_TrayMenu);
     trayIcon.show();
 
     // Trigger is default for QMenu. set it to nullptr to customize
