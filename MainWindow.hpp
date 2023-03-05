@@ -14,6 +14,7 @@
 #include <QSystemTrayIcon>
 #include <QPushButton>
 #include <QTimer>
+#include <QMenu>
 #include "Wrappers.hpp"
 #include "SlidersHBoxLayout.hpp"
 #include "SliderWithLabelsLayout.hpp"
@@ -32,6 +33,8 @@ private:
     SlidersHBoxLayout m_MainLayout;
     ViewChangeButton hideButton;
     QTimer m_Timer;
+    QTimer click_tmr;
+    QMenu trayMenu;
     int displayCount{};
 
     BrightnessSlider* generalSlider();

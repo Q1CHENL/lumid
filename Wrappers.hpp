@@ -5,7 +5,6 @@
 #ifndef DARKERBRIGHTNESS_WRAPPERS_HPP
 #define DARKERBRIGHTNESS_WRAPPERS_HPP
 
-
 #include <QTimer>
 #include <QSlider>
 #include <QPushButton>
@@ -33,7 +32,9 @@ namespace Wrappers {
         void setTimer(QTimer *timer);
     };
 
-    void restartTimerInSecs(QTimer *timer, int secs);
+    void restartTimerForSecs(QTimer *timer, int secs);
+
+
 }
 
 

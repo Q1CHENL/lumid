@@ -9,12 +9,12 @@ void Wrappers::BrightnessSlider::setTimer(QTimer *timer) {
     QObject::connect(this, &QSlider::sliderReleased, this, [=]() {
         show();
         m_Timer->stop();
-        restartTimerInSecs(timer, 5);
+        restartTimerForSecs(timer, 5);
     });
     QObject::connect(this, &QSlider::sliderPressed, this, [=]() {
         show();
         m_Timer->stop();
-        restartTimerInSecs(timer, 5);
+        restartTimerForSecs(timer, 5);
     });
 }
 
@@ -22,14 +22,15 @@ void Wrappers::ViewChangeButton::setTimer(QTimer *timer) {
     m_Timer = timer;
     QObject::connect(this, &QPushButton::clicked, this, [=]() {
         show();
-        restartTimerInSecs(timer, 5);
+        restartTimerForSecs(timer, 5);
     });
 }
 
-void Wrappers::restartTimerInSecs(QTimer *timer, int secs) {
+void Wrappers::restartTimerForSecs(QTimer *timer, int secs) {
     timer->stop();
     timer->start(secs * 1000);
 }
+
 
 // The PRESSED signal is emitted when the button is first pressed down by
 // the user. It is emitted immediately when the mouse button is pressed down,

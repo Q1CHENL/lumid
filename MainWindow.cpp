@@ -28,11 +28,24 @@ MainWindow::MainWindow() {
     //tray icon does not show using resource image
     trayIcon.setIcon(QIcon("/usr/share/icons/darkerbrightness-2nd-version.png"));
 
-    auto *trayMenu = new QMenu(this);
-    trayMenu->addAction("Open", this, &MainWindow::show);
-    trayMenu->addAction("Exit", this, &MainWindow::onExit);
-    trayIcon.setContextMenu(trayMenu);
+    trayMenu.addAction("Open", this, [=]() {
+        show();
+        restartTimerForSecs(&m_Timer, 5);
+    });
+    trayMenu.addAction("Exit", this, &MainWindow::onExit);
+    trayIcon.setContextMenu(&trayMenu);
     trayIcon.show();
+
+    // Trigger is default for QMenu. set it to nullptr to customize
+    // First click of double click is recognized as Trigger
+    // I don't why this works, but it works
+    connect(&trayIcon, &QSystemTrayIcon::activated, this, [this](QSystemTrayIcon::ActivationReason reason) {
+        if (reason == QSystemTrayIcon::Trigger) {
+            m_Timer.stop();
+            show();
+            restartTimerForSecs(&m_Timer, 10);
+        }
+    });
 
     //add layout to main
     addLayouts();
@@ -68,8 +81,7 @@ MainWindow::MainWindow() {
 void MainWindow::shortCutsKeyPressed(BrightnessSlider *slider, int value) {
     show();
     slider->setValue(slider->value() + value);
-    m_Timer.stop();
-    m_Timer.start(3000); // start the timer with 3 second timeout
+    restartTimerForSecs(&m_Timer, 3);// start the timer with 3 second timeout
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
