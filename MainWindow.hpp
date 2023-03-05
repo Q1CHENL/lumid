@@ -14,8 +14,11 @@
 #include <QSystemTrayIcon>
 #include <QPushButton>
 #include <QTimer>
+#include "Wrappers.hpp"
 #include "SlidersHBoxLayout.hpp"
 #include "SliderWithLabelsLayout.hpp"
+
+using namespace Wrappers;
 
 class MainWindow : public QWidget
 {
@@ -27,7 +30,7 @@ private:
     bool other_sliders_hidden = true;
     QSystemTrayIcon trayIcon;
     SlidersHBoxLayout m_MainLayout;
-    QPushButton hideButton;
+    ViewChangeButton hideButton;
     QTimer m_Timer;
     int displayCount{};
 

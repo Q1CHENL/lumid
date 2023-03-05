@@ -2,21 +2,46 @@
 // Created by liuqichen on 3/4/23.
 //
 
-#include "BrightnessSlider.hpp"
+#include "Wrappers.hpp"
 
-void BrightnessSlider::setTimer(QTimer *timer) {
+void Wrappers::BrightnessSlider::setTimer(QTimer *timer) {
     m_Timer = timer;
     QObject::connect(this, &QSlider::sliderReleased, this, [=]() {
         show();
         m_Timer->stop();
-        m_Timer->start(5000);
+        restartTimerInSecs(timer, 5);
     });
     QObject::connect(this, &QSlider::sliderPressed, this, [=]() {
         show();
         m_Timer->stop();
-        m_Timer->start(5000);
+        restartTimerInSecs(timer, 5);
     });
 }
+
+void Wrappers::ViewChangeButton::setTimer(QTimer *timer) {
+    m_Timer = timer;
+    QObject::connect(this, &QPushButton::clicked, this, [=]() {
+        show();
+        restartTimerInSecs(timer, 5);
+    });
+}
+
+void Wrappers::restartTimerInSecs(QTimer *timer, int secs) {
+    timer->stop();
+    timer->start(secs * 1000);
+}
+
+// The PRESSED signal is emitted when the button is first pressed down by
+// the user. It is emitted immediately when the mouse button is pressed down,
+// before the button is released. This signal is useful if you want to
+// respond to the button being pressed down, but don't necessarily want
+// to respond to the button being released or clicked.
+//
+// The CLICKED signal is emitted when the button is clicked by the user.
+// It is emitted when the mouse button is pressed down and then released
+// while over the button. This signal is useful if you want to respond to
+// the button being clicked, which is the most common use case for a button.
+
 
 // FROM ChatGPT:
 // Yes, I'm sure about this. Using signals and slots instead of event
@@ -42,5 +67,4 @@ void BrightnessSlider::setTimer(QTimer *timer) {
 // not easily expressed with signals and slots. But in general, whenever
 // possible, it's a good idea to use signals and slots instead of event
 // filters.
-
 

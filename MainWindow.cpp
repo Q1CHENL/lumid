@@ -3,7 +3,7 @@
 //
 #include <regex>
 #include "MainWindow.hpp"
-#include "BrightnessSlider.hpp"
+#include "Wrappers.hpp"
 #include <QCloseEvent>
 #include <QMenu>
 #include <QScreen>
@@ -12,6 +12,8 @@
 #include <QMenuBar>
 #include <QxtGlobalShortcut>
 #include <QTimer>
+
+using namespace Wrappers;
 
 MainWindow::MainWindow() {
     setWindowTitle(" ");
@@ -35,6 +37,7 @@ MainWindow::MainWindow() {
     //add layout to main
     addLayouts();
 
+    hideButton.setTimer(&m_Timer);
     hideButton.setText("Show All");
     hideButton.setParent(this);
     connect(&hideButton, &QPushButton::clicked, this, [=]() {
