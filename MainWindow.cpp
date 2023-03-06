@@ -168,8 +168,24 @@ void MainWindow::initAllLayouts() {
             QStringList args;
             QString newValue = QString::number(value);
             QStringList arguments;
+            // https://www.ddcutil.com/faq/
+            // Option --sleep-multiplier. This option adjusts the length 
+            // of time ddcutil spends in DDC/CI mandated waits. For example,
+            // if the DDC/CI protocol specifies a 40 ms wait between the
+            // time a command is sent to the monitor and the time a reply 
+            // is read, and --sleep-multiplier .2 is given, ddcutil will 
+            // only wait (.2 x 40 ms) = 8 ms. Some monitors have been found
+            // to communicate successfully with --sleep-multiplier values as
+            // low as .1. On the other hand, some monitors with poor DDC/CI
+            // implementations perform better if the sleep time is increased
+            //  by using a value greater than 1.
+
+            // .03 is generally a relatively safe multiplier value
+            QString sleep_multiplier(".03");
             arguments << newValue << "--async" << "--bus"
-                      << QString::fromStdString(std::get<1>(info.at(j)));
+                      << QString::fromStdString(std::get<1>(info.at(j))) 
+                      << "--sleep-multiplier" 
+                      << sleep_multiplier;
             //Note that here sudo is the program, ddcutil is considered as an argument
             QProcess::startDetached("sudo", QStringList() << "ddcutil" << "setvcp" << "10" << arguments);
             subLayoutsVex.at(i)->m_BrightnessLabel.setText(QString::number(value));
