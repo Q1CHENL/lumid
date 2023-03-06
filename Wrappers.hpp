@@ -2,8 +2,8 @@
 // Created by liuqichen on 3/4/23.
 //
 
-#ifndef DARKERBRIGHTNESS_WRAPPERS_HPP
-#define DARKERBRIGHTNESS_WRAPPERS_HPP
+#ifndef LUMID_WRAPPERS_HPP
+#define LUMID_WRAPPERS_HPP
 
 #include <QTimer>
 #include <QSlider>
@@ -67,4 +67,4 @@ namespace Wrappers {
 // the owning object (TrayMenu) is destroyed, and not when it goes out
 // of scope.
 
-#endif //DARKERBRIGHTNESS_WRAPPERS_HPP
+#endif //LUMID_WRAPPERS_HPP

@@ -26,15 +26,7 @@ MainWindow::MainWindow() {
 
     //change the path to yours
     //tray icon does not show using resource image
-    trayIcon.setIcon(QIcon("/usr/share/icons/darkerbrightness-2nd-version.png"));
-
-//    m_TrayMenu.addAction("Open", this, [=]() {
-//        show();
-//        restartTimerForSecs(&m_Timer, 5);
-//    });
-//    m_TrayMenu.addAction("Preferences", this, [=](){
-//    });
-//    m_TrayMenu.addAction("Exit", this, &MainWindow::onExit);
+    trayIcon.setIcon(QIcon("/usr/share/icons/lumid.png"));
     trayIcon.setContextMenu(&m_TrayMenu);
     trayIcon.show();
 
@@ -226,7 +218,7 @@ void MainWindow::initLayout(SliderWithLabelsLayout *layout,
 void MainWindow::hideOtherSliders() {
     if (other_sliders_hidden) {
         performHideAndChangeButtonText("Focus",
-                                       "DarkerBrightness",
+                                       "Lumid",
                                        other_sliders_hidden,
                                        &hideButton,
                                        &m_MainLayout,

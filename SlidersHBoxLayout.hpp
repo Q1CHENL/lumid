@@ -2,8 +2,8 @@
 // Created by liuqichen on 2/19/23.
 //
 
-#ifndef DARKERBRIGHTNESS_SLIDERSHBOXLAYOUT_HPP
-#define DARKERBRIGHTNESS_SLIDERSHBOXLAYOUT_HPP
+#ifndef LUMID_SLIDERSHBOXLAYOUT_HPP
+#define LUMID_SLIDERSHBOXLAYOUT_HPP
 
 
 #include <QHBoxLayout>
@@ -14,4 +14,4 @@ public:
     [[nodiscard]] QSize sizeHint() const override;
 };
 
-#endif //DARKERBRIGHTNESS_SLIDERSHBOXLAYOUT_HPP
+#endif //LUMID_SLIDERSHBOXLAYOUT_HPP
