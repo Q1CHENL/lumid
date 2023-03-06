@@ -19,7 +19,7 @@ include_directories(/usr/include/qt5/QxtCore)
 find_library(QTX_CORE_LIB QxtCore-qt5 HINTS /usr/lib64/)
 find_library(QTX_WIDGETS_LIB QxtWidgets-qt5 HINTS /usr/lib64/)
 
-add_executable(darkerbrightness main.cpp MainWindow.cpp MainWindow.hpp SlidersHBoxLayout.cpp SlidersHBoxLayout.hpp SliderWithLabelsLayout.cpp SliderWithLabelsLayout.hpp Wrappers.cpp Wrappers.hpp)
+add_executable(darkerbrightness Main.cpp MainWindow.cpp MainWindow.hpp SlidersHBoxLayout.cpp SlidersHBoxLayout.hpp SliderWithLabelsLayout.cpp SliderWithLabelsLayout.hpp Wrappers.cpp Wrappers.hpp)
 target_link_libraries(darkerbrightness
         Qt5::Core
         Qt5::Gui
