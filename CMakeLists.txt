@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.24)
-set(CMAKE_CXX_COMPILER /usr/lib64/ccache/gcc)
+set(CMAKE_CXX_COMPILER /usr/lib64/ccache/g++)
 project(DarkerBrightness)
 
 set(CMAKE_CXX_STANDARD 17)
