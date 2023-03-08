@@ -16,7 +16,6 @@
 #include <QTimer>
 #include <QMenu>
 #include "Wrappers.hpp"
-#include "SliderWithLabelsLayout.hpp"
 
 using namespace Wrappers;
 

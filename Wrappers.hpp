@@ -12,6 +12,8 @@
 #include <QSlider>
 #include <QSystemTrayIcon>
 #include <QTimer>
+#include <QHBoxLayout>
+#include <QLabel>
 
 namespace Wrappers {
 
