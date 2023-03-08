@@ -78,7 +78,7 @@ Wrappers::TrayMenu::TrayMenu() {
 void Wrappers::TrayMenu::connectSignals(MainWindow* mainWindow) {
     // use "=" to capture ptr to ensure to have a copy
     connect(m_Open.get(), &QAction::triggered, this, [=](){
-        mainWindow->showOnRightSide();
+        mainWindow->showOnTopLeft();
     });
     connect(m_Preferences.get(), &QAction::triggered, this,
             [&]() { m_PreferencesWindow->show(); });

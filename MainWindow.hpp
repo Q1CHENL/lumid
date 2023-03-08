@@ -16,17 +16,21 @@
 #include <QTimer>
 #include <QMenu>
 #include "Wrappers.hpp"
+#include <QScreen>
 
 using namespace Wrappers;
 
-class MainWindow : public QWidget
-{
+class MainWindow : public QWidget {
 public:
     MainWindow();
+
     static void onExit();
-    void showOnRightSide();
+
+    void showOnTopLeft();
 
 private:
+    int posX;
+    int posY;
     bool other_sliders_hidden = true;
     QSystemTrayIcon trayIcon;
     SlidersHBoxLayout m_MainLayout;
@@ -36,25 +40,37 @@ private:
     TrayMenu m_TrayMenu;
     int displayCount{};
 
-    BrightnessSlider* generalSlider();
+    BrightnessSlider *generalSlider();
+
     std::vector<std::unique_ptr<SliderWithLabelsLayout>> subLayoutsVex;
+
     void onFocusChanged(QWidget *oldWidget, QWidget *newWidget);
+
     void hideOtherSliders();
+
     void initAllLayouts();
+
     void addLayouts();
+
     void closeEvent(QCloseEvent *event) override;
-    static void switchVisibility(SliderWithLabelsLayout* layout, bool visible);
-    void initLayout(SliderWithLabelsLayout* layout, std::vector<std::tuple<std::string, std::string, int>> info, int index, bool visible);
+
+    static void switchVisibility(SliderWithLabelsLayout *layout, bool visible);
+
+    void
+    initLayout(SliderWithLabelsLayout *layout, std::vector<std::tuple<std::string, std::string, int>> info, int index,
+               bool visible);
+
     bool eventFilter(QObject *obj, QEvent *event) override;
-    void shortCutsKeyPressed(BrightnessSlider* slider, int value);
-    void performHideAndChangeButtonText(const std::string& buttonText,
-                                        const std::string& windowTitle,
+
+    void shortCutsKeyPressed(BrightnessSlider *slider, int value);
+
+    void performHideAndChangeButtonText(const std::string &buttonText,
+                                        const std::string &windowTitle,
                                         bool currentHidden,
-                                        QPushButton* button,
-                                        SlidersHBoxLayout* layout,
-                                        std::vector<std::unique_ptr<SliderWithLabelsLayout>>* subLayoutsVex
+                                        QPushButton *button,
+                                        SlidersHBoxLayout *layout,
+                                        std::vector<std::unique_ptr<SliderWithLabelsLayout>> *subLayoutsVex
     );
-    
 
 
 };

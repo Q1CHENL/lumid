@@ -1,7 +1,6 @@
 //
 // Created by liuqichen on 2/13/23.
 //
-#include "MainWindow.hpp"
 
 #include <QDebug>
 #include <QCloseEvent>
@@ -14,6 +13,7 @@
 #include <iostream>
 #include <regex>
 
+#include "MainWindow.hpp"
 #include "Wrappers.hpp"
 
 using namespace Wrappers;
@@ -23,6 +23,11 @@ MainWindow::MainWindow() {
     setFixedSize(400, 500);
     m_MainLayout.setSizeConstraint(QLayout::SetFixedSize);
     setWindowFlags(Qt::Window | Qt::WindowStaysOnTopHint);
+
+    QRect screenGeometry = QGuiApplication::screens()[0]->geometry();
+    posX = screenGeometry.left() + 50;
+    posY = (screenGeometry.bottom() - screenGeometry.top()) * 0.618;
+
     initAllLayouts();
     BrightnessSlider *mainSlider = generalSlider();
     connect(&m_Timer, SIGNAL(timeout()), this, SLOT(hide()));
@@ -41,7 +46,7 @@ MainWindow::MainWindow() {
             [this](QSystemTrayIcon::ActivationReason reason) {
                 if (reason == QSystemTrayIcon::Trigger) {
                     m_Timer.stop();
-                    showOnRightSide();
+                    showOnTopLeft();
                     restartTimerForSecs(&m_Timer, 10);
                 }
             });
@@ -76,7 +81,7 @@ MainWindow::MainWindow() {
 }
 
 void MainWindow::shortCutsKeyPressed(BrightnessSlider *slider, int value) {
-    show();
+    showOnTopLeft();
     slider->setValue(slider->value() + value);
     restartTimerForSecs(&m_Timer, 3);  // start the timer with 3 second timeout
 }
@@ -294,7 +299,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
     if (event->type() == QEvent::MouseButtonPress &&
         (obj == this || obj == generalSlider())) {
         // Do something when the slider is clicked
-        show();
+        showOnTopLeft();
         m_Timer.stop();
         m_Timer.start(5000);
         return true;
@@ -305,16 +310,13 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
 void MainWindow::onFocusChanged(QWidget *oldWidget, QWidget *newWidget) {
     if (newWidget == this || newWidget == generalSlider()) {
         // Do something when the main window or slider gets focus
-        show();
+        showOnTopLeft();
         m_Timer.stop();
         m_Timer.start(5000);
     }
 }
 
-void MainWindow::showOnRightSide() {
-    QRect screenGeometry = QGuiApplication::screens()[0]->geometry();
-    int x = screenGeometry.left() + 50;
-    int y = (screenGeometry.bottom() - screenGeometry.top()) * 0.618;
-    move(x, y);
+void MainWindow::showOnTopLeft() {
+    move(posX, posY);
     show();
 }
