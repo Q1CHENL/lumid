@@ -70,16 +70,22 @@ void Wrappers::restartTimerForSecs(QTimer *timer, int secs) {
 // filters.
 
 Wrappers::TrayMenu::TrayMenu() {
-    connect(m_Open.get(), &QAction::triggered, this, &MainWindow::show);
-    connect(m_Preferences.get(), &QAction::triggered, this,
-            [&]() { m_PreferencesWindow->show(); });
-    connect(m_Exit.get(), &QAction::triggered, this, &QCoreApplication::quit);
     addAction(m_Open.get());
     addAction(m_Preferences.get());
     addAction(m_Exit.get());
 }
 
-PreferencesWindow::PreferencesWindow() {}
+void Wrappers::TrayMenu::connectSignals(MainWindow* mainWindow) {
+    // use "=" to capture ptr to ensure to have a copy
+    connect(m_Open.get(), &QAction::triggered, this, [=](){
+        mainWindow->showOnRightSide();
+    });
+    connect(m_Preferences.get(), &QAction::triggered, this,
+            [&]() { m_PreferencesWindow->show(); });
+    connect(m_Exit.get(), &QAction::triggered, this, &QCoreApplication::quit);
+}
+
+Wrappers::PreferencesWindow::PreferencesWindow() = default;
 
 QSize Wrappers::SlidersHBoxLayout::sizeHint() const {
     QSize hint = QHBoxLayout::sizeHint();

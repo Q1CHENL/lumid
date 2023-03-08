@@ -3,6 +3,7 @@
 //
 #include "MainWindow.hpp"
 
+#include <QDebug>
 #include <QCloseEvent>
 #include <QMenu>
 #include <QMenuBar>
@@ -25,6 +26,7 @@ MainWindow::MainWindow() {
     initAllLayouts();
     BrightnessSlider *mainSlider = generalSlider();
     connect(&m_Timer, SIGNAL(timeout()), this, SLOT(hide()));
+    m_TrayMenu.connectSignals(this);
 
     // change the path to yours
     // tray icon does not show using resource image
@@ -39,7 +41,7 @@ MainWindow::MainWindow() {
             [this](QSystemTrayIcon::ActivationReason reason) {
                 if (reason == QSystemTrayIcon::Trigger) {
                     m_Timer.stop();
-                    show();
+                    showOnRightSide();
                     restartTimerForSecs(&m_Timer, 10);
                 }
             });
@@ -113,11 +115,11 @@ void MainWindow::initAllLayouts() {
         // Get the display name
         std::size_t end_pos = result.find('\n', start_pos);
         std::string bus_number =
-            result.substr(start_pos + 19, end_pos - start_pos - 19);
+                result.substr(start_pos + 19, end_pos - start_pos - 19);
         start_pos = result.find("Model:               ", end_pos);
         end_pos = result.find('\n', start_pos);
         std::string display_brand_name =
-            result.substr(start_pos + 22, end_pos - start_pos - 22);
+                result.substr(start_pos + 22, end_pos - start_pos - 22);
         info.emplace_back(display_brand_name, bus_number, 0);
     }
     std::sort(info.begin(), info.end(),
@@ -126,11 +128,11 @@ void MainWindow::initAllLayouts() {
                   return std::get<1>(a) > std::get<1>(b);
               });
 
-    displayCount = (int)info.size();
+    displayCount = (int) info.size();
     for (int i = 0; i < displayCount; i++) {
         std::string result_brightness;
         std::string cmd =
-            "sudo ddcutil getvcp 10 --bus " + std::get<1>(info.at(i));
+                "sudo ddcutil getvcp 10 --bus " + std::get<1>(info.at(i));
         FILE *pipe_brightness = popen(cmd.c_str(), "r");
         // if (!pipe_brightness) return -1;
         char buffer_brightness[128];
@@ -140,7 +142,7 @@ void MainWindow::initAllLayouts() {
         }
         pclose(pipe_brightness);
         // Extract the brightness value from the output
-        int pos = (int)result_brightness.find("current value =   ") + 18;
+        int pos = (int) result_brightness.find("current value =   ") + 18;
         std::string brightnessStr = result_brightness.substr(pos, 3);
         // trim space and assign
         std::get<2>(info.at(i)) = std::stoi(brightnessStr);
@@ -158,7 +160,7 @@ void MainWindow::initAllLayouts() {
                     subLayoutsVex.at(i + 1)->m_Slider.setValue(value);
                 }
                 subLayoutsVex.at(0)->m_BrightnessLabel.setText(
-                    QString::number(value));
+                        QString::number(value));
             });
 
     // init the unique ptrs
@@ -198,19 +200,19 @@ void MainWindow::initAllLayouts() {
                     // Note that here sudo is the program, ddcutil is considered
                     // as an argument
                     QProcess::startDetached("sudo", QStringList()
-                                                        << "ddcutil"
-                                                        << "setvcp"
-                                                        << "10" << arguments);
+                            << "ddcutil"
+                            << "setvcp"
+                            << "10" << arguments);
                     subLayoutsVex.at(i)->m_BrightnessLabel.setText(
-                        QString::number(value));
+                            QString::number(value));
                 });
     }
 }
 
 void MainWindow::initLayout(
-    SliderWithLabelsLayout *layout,
-    std::vector<std::tuple<std::string, std::string, int>> info, int index,
-    bool visible) {
+        SliderWithLabelsLayout *layout,
+        std::vector<std::tuple<std::string, std::string, int>> info, int index,
+        bool visible) {
     std::string displayName = std::get<0>(info.at(index));
     if (index == 0) {
         displayName += "\n(Primary)";
@@ -233,12 +235,12 @@ void MainWindow::initLayout(
 
     // brightness value label
     layout->m_BrightnessLabel.setText(
-        QString::number(std::get<2>(info.at(index))));
+            QString::number(std::get<2>(info.at(index))));
     setFixedSize(30, 24);
     layout->m_BrightnessLabel.setFrameStyle(QFrame::NoFrame);
     layout->m_BrightnessLabel.setLineWidth(1);
     layout->m_BrightnessLabel.setText(
-        QString::number(std::get<2>(info.at(index))));
+            QString::number(std::get<2>(info.at(index))));
     layout->m_BrightnessLabel.setAlignment(Qt::AlignCenter);
     layout->m_BrightnessLabel.setVisible(visible);
 
@@ -258,9 +260,9 @@ void MainWindow::hideOtherSliders() {
 }
 
 void MainWindow::performHideAndChangeButtonText(
-    const std::string &buttonText, const std::string &windowTitle,
-    bool currentlyHidden, QPushButton *button, SlidersHBoxLayout *layout,
-    std::vector<std::unique_ptr<SliderWithLabelsLayout>> *vex) {
+        const std::string &buttonText, const std::string &windowTitle,
+        bool currentlyHidden, QPushButton *button, SlidersHBoxLayout *layout,
+        std::vector<std::unique_ptr<SliderWithLabelsLayout>> *vex) {
     for (int i = 1; i < vex->size(); i++) {
         other_sliders_hidden = !currentlyHidden;
         switchVisibility(vex->at(i).get(), currentlyHidden);
@@ -282,7 +284,7 @@ BrightnessSlider *MainWindow::generalSlider() {
 }
 
 void MainWindow::addLayouts() {
-    for (const auto &i : subLayoutsVex) {
+    for (const auto &i: subLayoutsVex) {
         m_MainLayout.addLayout(i.get());
     }
 }
@@ -314,5 +316,5 @@ void MainWindow::showOnRightSide() {
     int x = screenGeometry.left() + 50;
     int y = (screenGeometry.bottom() - screenGeometry.top()) * 0.618;
     move(x, y);
-    QWidget::show();
+    show();
 }

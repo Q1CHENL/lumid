@@ -15,6 +15,9 @@
 #include <QHBoxLayout>
 #include <QLabel>
 
+//include leads to circular dependency
+class MainWindow;
+
 namespace Wrappers {
 
 class BrightnessSlider : public QSlider {
@@ -49,12 +52,14 @@ class TrayMenu : public QMenu {
     std::unique_ptr<PreferencesWindow> m_PreferencesWindow =
         std::make_unique<PreferencesWindow>();
     std::unique_ptr<QAction> m_Open = std::make_unique<QAction>("Open", this);
-    ;
+
     std::unique_ptr<QAction> m_Preferences =
         std::make_unique<QAction>("Preferences", this);
-    ;
+
     std::unique_ptr<QAction> m_Exit = std::make_unique<QAction>("Exit", this);
-    ;
+
+    void connectSignals(MainWindow* mainWindow);
+
 };
 
 class SlidersHBoxLayout : public QHBoxLayout {
