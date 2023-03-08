@@ -16,7 +16,6 @@
 #include <QTimer>
 #include <QMenu>
 #include "Wrappers.hpp"
-#include "SlidersHBoxLayout.hpp"
 #include "SliderWithLabelsLayout.hpp"
 
 using namespace Wrappers;
@@ -26,6 +25,7 @@ class MainWindow : public QWidget
 public:
     MainWindow();
     static void onExit();
+    void showOnRightSide();
 
 private:
     bool other_sliders_hidden = true;
@@ -55,6 +55,7 @@ private:
                                         SlidersHBoxLayout* layout,
                                         std::vector<std::unique_ptr<SliderWithLabelsLayout>>* subLayoutsVex
     );
+    
 
 
 };

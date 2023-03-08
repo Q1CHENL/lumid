@@ -3,9 +3,8 @@
 //
 
 #include "Wrappers.hpp"
-#include "MainWindow.hpp"
 #include <QSystemTrayIcon>
-
+#include "MainWindow.hpp"
 
 void Wrappers::BrightnessSlider::setTimer(QTimer *timer) {
     m_Timer = timer;
@@ -34,7 +33,6 @@ void Wrappers::restartTimerForSecs(QTimer *timer, int secs) {
     timer->start(secs * 1000);
 }
 
-
 // The PRESSED signal is emitted when the button is first pressed down by
 // the user. It is emitted immediately when the mouse button is pressed down,
 // before the button is released. This signal is useful if you want to
@@ -45,7 +43,6 @@ void Wrappers::restartTimerForSecs(QTimer *timer, int secs) {
 // It is emitted when the mouse button is pressed down and then released
 // while over the button. This signal is useful if you want to respond to
 // the button being clicked, which is the most common use case for a button.
-
 
 // FROM ChatGPT:
 // Yes, I'm sure about this. Using signals and slots instead of event
@@ -74,16 +71,25 @@ void Wrappers::restartTimerForSecs(QTimer *timer, int secs) {
 
 Wrappers::TrayMenu::TrayMenu() {
     connect(m_Open.get(), &QAction::triggered, this, &MainWindow::show);
-    connect(m_Preferences.get(), &QAction::triggered, this, [&]() {
-        m_PreferencesWindow->show();
-    });
+    connect(m_Preferences.get(), &QAction::triggered, this,
+            [&]() { m_PreferencesWindow->show(); });
     connect(m_Exit.get(), &QAction::triggered, this, &QCoreApplication::quit);
     addAction(m_Open.get());
     addAction(m_Preferences.get());
     addAction(m_Exit.get());
-
 }
 
-PreferencesWindow::PreferencesWindow() {
+PreferencesWindow::PreferencesWindow() {}
 
+QSize Wrappers::SlidersHBoxLayout::sizeHint() const {
+    QSize hint = QHBoxLayout::sizeHint();
+    hint.setHeight(300);  // Set a custom width for the layout
+    return hint;
+}
+
+Wrappers::SliderWithLabelsLayout::SliderWithLabelsLayout() {
+    addWidget(&m_BrightnessLabel, 0, Qt::AlignHCenter);
+    addWidget(&m_Slider, 0, Qt::AlignHCenter);
+    addWidget(&m_DisplayNameLabel, 0, Qt::AlignHCenter);
+    setAlignment(Qt::AlignHCenter);
 }

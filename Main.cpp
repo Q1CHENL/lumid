@@ -7,10 +7,9 @@ int main(int argc, char *argv[])
 
 
     MainWindow window;
-    window.show();
+    window.showOnRightSide();
 
     return QApplication::exec();
 }
 //todo solve bug when multiple at once
-//todo do disapear when mouse clicked
 //todo custimize keyboard shortcuts
