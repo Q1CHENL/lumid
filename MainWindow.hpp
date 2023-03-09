@@ -18,6 +18,15 @@
 #include "Wrappers.hpp"
 #include <QScreen>
 
+#define POS_FROM_LEFT_EDGE 50
+#define VERTICAL_POS_FACTOR 0.618
+#define SLEEP_MULTIPLIER .03
+#define STAY_TIME_LONG 6.5
+#define STAY_TIME_SHORT 3
+#define STRIDE 10
+#define MAIN_WINDOW_X 400
+#define MAIN_WINDOW_Y 500
+
 using namespace Wrappers;
 
 class MainWindow : public QWidget {
@@ -62,7 +71,7 @@ private:
 
     bool eventFilter(QObject *obj, QEvent *event) override;
 
-    void shortCutsKeyPressed(BrightnessSlider *slider, int value);
+    void shortCutsKeyPressed(BrightnessSlider *slider, int stride);
 
     void performHideAndChangeButtonText(const std::string &buttonText,
                                         const std::string &windowTitle,

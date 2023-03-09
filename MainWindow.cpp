@@ -1,9 +1,8 @@
 //
 // Created by liuqichen on 2/13/23.
 //
-
-#include <QDebug>
 #include <QCloseEvent>
+#include <QDebug>
 #include <QMenu>
 #include <QMenuBar>
 #include <QScreen>
@@ -20,13 +19,14 @@ using namespace Wrappers;
 
 MainWindow::MainWindow() {
     setWindowTitle(" ");
-    setFixedSize(400, 500);
+    setFixedSize(MAIN_WINDOW_X, MAIN_WINDOW_Y);
     m_MainLayout.setSizeConstraint(QLayout::SetFixedSize);
     setWindowFlags(Qt::Window | Qt::WindowStaysOnTopHint);
 
+    // App appears at position posX, posY
     QRect screenGeometry = QGuiApplication::screens()[0]->geometry();
-    posX = screenGeometry.left() + 50;
-    posY = (screenGeometry.bottom() - screenGeometry.top()) * 0.618;
+    posX = screenGeometry.left() + POS_FROM_LEFT_EDGE;
+    posY = (screenGeometry.bottom() - screenGeometry.top()) * VERTICAL_POS_FACTOR;
 
     initAllLayouts();
     BrightnessSlider *mainSlider = generalSlider();
@@ -47,11 +47,11 @@ MainWindow::MainWindow() {
                 if (reason == QSystemTrayIcon::Trigger) {
                     m_Timer.stop();
                     showOnTopLeft();
-                    restartTimerForSecs(&m_Timer, 10);
+                    restartTimerForSecs(&m_Timer, STAY_TIME_LONG);
                 }
             });
 
-    // add layout to main
+    // Add layouts to main
     addLayouts();
 
     hideButton.setTimer(&m_Timer);
@@ -62,36 +62,35 @@ MainWindow::MainWindow() {
 
     subLayoutsVex.at(0)->addWidget(&hideButton);
 
+    // Shortcuts for in-/decreasing brightness
     auto *shortcutF5 = new QxtGlobalShortcut(QKeySequence(Qt::Key_F5), this);
     auto *shortcutF6 = new QxtGlobalShortcut(QKeySequence(Qt::Key_F6), this);
 
     // Connect shortcuts to slider value change signal
     // Qxt will hide keyPressEvent()
     QObject::connect(shortcutF5, &QxtGlobalShortcut::activated, mainSlider,
-                     [=]() { shortCutsKeyPressed(mainSlider, -10); });
+                     [=]() { shortCutsKeyPressed(mainSlider, -STRIDE); });
 
     QObject::connect(shortcutF6, &QxtGlobalShortcut::activated, mainSlider,
-                     [=]() { shortCutsKeyPressed(mainSlider, 10); });
+                     [=]() { shortCutsKeyPressed(mainSlider, STRIDE); });
 
     installEventFilter(this);
-    connect(qApp, &QApplication::focusChanged, this,
-            &MainWindow::onFocusChanged);
 
     setLayout(&m_MainLayout);
 }
 
-void MainWindow::shortCutsKeyPressed(BrightnessSlider *slider, int value) {
+void MainWindow::shortCutsKeyPressed(BrightnessSlider *slider, int stride) {
     showOnTopLeft();
-    slider->setValue(slider->value() + value);
-    restartTimerForSecs(&m_Timer, 3);  // start the timer with 3 second timeout
+    slider->setValue(slider->value() + stride);
+    restartTimerForSecs(&m_Timer, STAY_TIME_SHORT);  // Start the timer with 3 second timeout
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
     if (trayIcon.isVisible()) {
-        hide();           // hide the main window
-        event->ignore();  // ignore the close event
+        hide();           // Hide the main window
+        event->ignore();  // Ignore the close event
     } else {
-        event->accept();  // exit the application
+        event->accept();  // Exit the application
     }
 }
 
@@ -120,11 +119,11 @@ void MainWindow::initAllLayouts() {
         // Get the display name
         std::size_t end_pos = result.find('\n', start_pos);
         std::string bus_number =
-                result.substr(start_pos + 19, end_pos - start_pos - 19);
+            result.substr(start_pos + 19, end_pos - start_pos - 19);
         start_pos = result.find("Model:               ", end_pos);
         end_pos = result.find('\n', start_pos);
         std::string display_brand_name =
-                result.substr(start_pos + 22, end_pos - start_pos - 22);
+            result.substr(start_pos + 22, end_pos - start_pos - 22);
         info.emplace_back(display_brand_name, bus_number, 0);
     }
     std::sort(info.begin(), info.end(),
@@ -133,11 +132,11 @@ void MainWindow::initAllLayouts() {
                   return std::get<1>(a) > std::get<1>(b);
               });
 
-    displayCount = (int) info.size();
+    displayCount = (int)info.size();
     for (int i = 0; i < displayCount; i++) {
         std::string result_brightness;
         std::string cmd =
-                "sudo ddcutil getvcp 10 --bus " + std::get<1>(info.at(i));
+            "sudo ddcutil getvcp 10 --bus " + std::get<1>(info.at(i));
         FILE *pipe_brightness = popen(cmd.c_str(), "r");
         // if (!pipe_brightness) return -1;
         char buffer_brightness[128];
@@ -147,7 +146,7 @@ void MainWindow::initAllLayouts() {
         }
         pclose(pipe_brightness);
         // Extract the brightness value from the output
-        int pos = (int) result_brightness.find("current value =   ") + 18;
+        int pos = (int)result_brightness.find("current value =   ") + 18;
         std::string brightnessStr = result_brightness.substr(pos, 3);
         // trim space and assign
         std::get<2>(info.at(i)) = std::stoi(brightnessStr);
@@ -165,7 +164,7 @@ void MainWindow::initAllLayouts() {
                     subLayoutsVex.at(i + 1)->m_Slider.setValue(value);
                 }
                 subLayoutsVex.at(0)->m_BrightnessLabel.setText(
-                        QString::number(value));
+                    QString::number(value));
             });
 
     // init the unique ptrs
@@ -197,27 +196,26 @@ void MainWindow::initAllLayouts() {
                     //  by using a value greater than 1.
 
                     // .03 is generally a relatively safe multiplier value
-                    QString sleep_multiplier(".03");
                     arguments << newValue << "--async"
                               << "--bus"
                               << QString::fromStdString(std::get<1>(info.at(j)))
-                              << "--sleep-multiplier" << sleep_multiplier;
+                              << "--sleep-multiplier" << QString::number(SLEEP_MULTIPLIER);
                     // Note that here sudo is the program, ddcutil is considered
                     // as an argument
                     QProcess::startDetached("sudo", QStringList()
-                            << "ddcutil"
-                            << "setvcp"
-                            << "10" << arguments);
+                                                        << "ddcutil"
+                                                        << "setvcp"
+                                                        << "10" << arguments);
                     subLayoutsVex.at(i)->m_BrightnessLabel.setText(
-                            QString::number(value));
+                        QString::number(value));
                 });
     }
 }
 
 void MainWindow::initLayout(
-        SliderWithLabelsLayout *layout,
-        std::vector<std::tuple<std::string, std::string, int>> info, int index,
-        bool visible) {
+    SliderWithLabelsLayout *layout,
+    std::vector<std::tuple<std::string, std::string, int>> info, int index,
+    bool visible) {
     std::string displayName = std::get<0>(info.at(index));
     if (index == 0) {
         displayName += "\n(Primary)";
@@ -229,7 +227,7 @@ void MainWindow::initLayout(
     layout->m_DisplayNameLabel.setLineWidth(1);
     layout->m_DisplayNameLabel.setVisible(visible);
 
-    // slider
+    // Slider
     layout->m_Slider.setOrientation(Qt::Vertical);
     layout->m_Slider.setRange(0, 100);
     layout->m_Slider.setValue(std::get<2>(info.at(index)));
@@ -238,18 +236,18 @@ void MainWindow::initLayout(
     layout->m_Slider.setVisible(visible);
     layout->m_Slider.setTimer(&m_Timer);
 
-    // brightness value label
+    // Brightness value label
     layout->m_BrightnessLabel.setText(
-            QString::number(std::get<2>(info.at(index))));
+        QString::number(std::get<2>(info.at(index))));
     setFixedSize(30, 24);
     layout->m_BrightnessLabel.setFrameStyle(QFrame::NoFrame);
     layout->m_BrightnessLabel.setLineWidth(1);
     layout->m_BrightnessLabel.setText(
-            QString::number(std::get<2>(info.at(index))));
+        QString::number(std::get<2>(info.at(index))));
     layout->m_BrightnessLabel.setAlignment(Qt::AlignCenter);
     layout->m_BrightnessLabel.setVisible(visible);
 
-    // bus
+    // Bus
     layout->displayBus = std::get<1>(info.at(index));
 }
 
@@ -265,9 +263,9 @@ void MainWindow::hideOtherSliders() {
 }
 
 void MainWindow::performHideAndChangeButtonText(
-        const std::string &buttonText, const std::string &windowTitle,
-        bool currentlyHidden, QPushButton *button, SlidersHBoxLayout *layout,
-        std::vector<std::unique_ptr<SliderWithLabelsLayout>> *vex) {
+    const std::string &buttonText, const std::string &windowTitle,
+    bool currentlyHidden, QPushButton *button, SlidersHBoxLayout *layout,
+    std::vector<std::unique_ptr<SliderWithLabelsLayout>> *vex) {
     for (int i = 1; i < vex->size(); i++) {
         other_sliders_hidden = !currentlyHidden;
         switchVisibility(vex->at(i).get(), currentlyHidden);
@@ -289,34 +287,25 @@ BrightnessSlider *MainWindow::generalSlider() {
 }
 
 void MainWindow::addLayouts() {
-    for (const auto &i: subLayoutsVex) {
+    for (const auto &i : subLayoutsVex) {
         m_MainLayout.addLayout(i.get());
     }
 }
 
-// restart timer when click on main window
+// Restart timer when main window clicked
 bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
     if (event->type() == QEvent::MouseButtonPress &&
         (obj == this || obj == generalSlider())) {
         // Do something when the slider is clicked
         showOnTopLeft();
-        m_Timer.stop();
-        m_Timer.start(5000);
+        restartTimerForSecs(&m_Timer, STAY_TIME_LONG);
         return true;
     }
     return QObject::eventFilter(obj, event);
 }
 
-void MainWindow::onFocusChanged(QWidget *oldWidget, QWidget *newWidget) {
-    if (newWidget == this || newWidget == generalSlider()) {
-        // Do something when the main window or slider gets focus
-        showOnTopLeft();
-        m_Timer.stop();
-        m_Timer.start(5000);
-    }
-}
-
 void MainWindow::showOnTopLeft() {
     move(posX, posY);
+    restartTimerForSecs(&m_Timer, STAY_TIME_LONG);
     show();
 }

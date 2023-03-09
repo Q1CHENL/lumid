@@ -11,12 +11,12 @@ void Wrappers::BrightnessSlider::setTimer(QTimer *timer) {
     QObject::connect(this, &QSlider::sliderReleased, this, [=]() {
         show();
         m_Timer->stop();
-        restartTimerForSecs(timer, 5);
+        restartTimerForSecs(timer, STAY_TIME_LONG);
     });
     QObject::connect(this, &QSlider::sliderPressed, this, [=]() {
         show();
         m_Timer->stop();
-        restartTimerForSecs(timer, 5);
+        restartTimerForSecs(timer, STAY_TIME_LONG);
     });
 }
 
@@ -24,7 +24,7 @@ void Wrappers::ViewChangeButton::setTimer(QTimer *timer) {
     m_Timer = timer;
     QObject::connect(this, &QPushButton::clicked, this, [=]() {
         show();
-        restartTimerForSecs(timer, 5);
+        restartTimerForSecs(timer, STAY_TIME_LONG);
     });
 }
 
@@ -82,7 +82,9 @@ void Wrappers::TrayMenu::connectSignals(MainWindow* mainWindow) {
     });
     connect(m_Preferences.get(), &QAction::triggered, this,
             [&]() { m_PreferencesWindow->show(); });
-    connect(m_Exit.get(), &QAction::triggered, this, &QCoreApplication::quit);
+    connect(m_Exit.get(), &QAction::triggered, this, [=](){
+        mainWindow->onExit();
+    });
 }
 
 Wrappers::PreferencesWindow::PreferencesWindow() = default;
