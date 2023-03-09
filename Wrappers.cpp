@@ -6,24 +6,24 @@
 #include <QSystemTrayIcon>
 #include "MainWindow.hpp"
 
-void Wrappers::BrightnessSlider::setTimer(QTimer *timer) {
+void Wrappers::BrightnessSlider::setTimer(QTimer *timer, MainWindow* mainWindow) {
     m_Timer = timer;
     QObject::connect(this, &QSlider::sliderReleased, this, [=]() {
-        show();
+        mainWindow->show();
         m_Timer->stop();
         restartTimerForSecs(timer, STAY_TIME_LONG);
     });
     QObject::connect(this, &QSlider::sliderPressed, this, [=]() {
-        show();
+        mainWindow->show();
         m_Timer->stop();
         restartTimerForSecs(timer, STAY_TIME_LONG);
     });
 }
 
-void Wrappers::ViewChangeButton::setTimer(QTimer *timer) {
+void Wrappers::ViewChangeButton::setTimer(QTimer *timer, MainWindow* mainWindow) {
     m_Timer = timer;
     QObject::connect(this, &QPushButton::clicked, this, [=]() {
-        show();
+        mainWindow->show();
         restartTimerForSecs(timer, STAY_TIME_LONG);
     });
 }

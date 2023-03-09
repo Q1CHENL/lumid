@@ -26,7 +26,7 @@ class BrightnessSlider : public QSlider {
 
     BrightnessSlider() = default;
 
-    void setTimer(QTimer *timer);
+    void setTimer(QTimer *timer, MainWindow* mainWindow);
 };
 
 class ViewChangeButton : public QPushButton {
@@ -35,7 +35,7 @@ class ViewChangeButton : public QPushButton {
 
     ViewChangeButton() = default;
 
-    void setTimer(QTimer *timer);
+    void setTimer(QTimer *timer, MainWindow* mainWindow);
 };
 
 class PreferencesWindow : public QDialog {

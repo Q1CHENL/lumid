@@ -53,8 +53,6 @@ private:
 
     std::vector<std::unique_ptr<SliderWithLabelsLayout>> subLayoutsVex;
 
-    void onFocusChanged(QWidget *oldWidget, QWidget *newWidget);
-
     void hideOtherSliders();
 
     void initAllLayouts();
