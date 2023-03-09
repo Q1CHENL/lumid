@@ -80,7 +80,11 @@ MainWindow::MainWindow() {
 }
 
 void MainWindow::shortCutsKeyPressed(BrightnessSlider *slider, int stride) {
-    showOnTopLeft();
+    if (this->isVisible()) {
+        show();
+    } else {
+        showOnTopLeft();
+    }
     slider->setValue(slider->value() + stride);
     restartTimerForSecs(&m_Timer, STAY_TIME_SHORT);  // Start the timer with 3 second timeout
 }
