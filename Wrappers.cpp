@@ -2,11 +2,14 @@
 // Created by liuqichen on 3/4/23.
 //
 
-#include "Wrappers.hpp"
+
 #include <QSystemTrayIcon>
+#include <QCloseEvent>
+
+#include "Wrappers.hpp"
 #include "MainWindow.hpp"
 
-void Wrappers::BrightnessSlider::setTimer(QTimer *timer, MainWindow* mainWindow) {
+void Wrappers::BrightnessSlider::setTimer(QTimer* timer, MainWindow* mainWindow) {
     m_Timer = timer;
     QObject::connect(this, &QSlider::sliderReleased, this, [=]() {
         mainWindow->show();
@@ -20,7 +23,7 @@ void Wrappers::BrightnessSlider::setTimer(QTimer *timer, MainWindow* mainWindow)
     });
 }
 
-void Wrappers::ViewChangeButton::setTimer(QTimer *timer, MainWindow* mainWindow) {
+void Wrappers::ViewChangeButton::setTimer(QTimer* timer, MainWindow* mainWindow) {
     m_Timer = timer;
     QObject::connect(this, &QPushButton::clicked, this, [=]() {
         mainWindow->show();
@@ -28,7 +31,7 @@ void Wrappers::ViewChangeButton::setTimer(QTimer *timer, MainWindow* mainWindow)
     });
 }
 
-void Wrappers::restartTimerForSecs(QTimer *timer, int secs) {
+void Wrappers::restartTimerForSecs(QTimer* timer, int secs) {
     timer->stop();
     timer->start(secs * 1000);
 }
@@ -77,17 +80,18 @@ Wrappers::TrayMenu::TrayMenu() {
 
 void Wrappers::TrayMenu::connectSignals(MainWindow* mainWindow) {
     // use "=" to capture ptr to ensure to have a copy
-    connect(m_Open.get(), &QAction::triggered, this, [=](){
-        mainWindow->showOnTopLeft();
-    });
-    connect(m_Preferences.get(), &QAction::triggered, this,
-            [&]() { m_PreferencesWindow->show(); });
-    connect(m_Exit.get(), &QAction::triggered, this, [=](){
-        mainWindow->onExit();
-    });
+    connect(m_Open.get(), &QAction::triggered, this, [=]() { mainWindow->showOnTopLeft(); });
+    connect(m_Preferences.get(), &QAction::triggered, this, [&]() { m_PreferencesWindow->show(); });
+    connect(m_Exit.get(), &QAction::triggered, this, [=]() { mainWindow->onExit(); });
+    connect(m_PreferencesWindow.get(), &QDialog::finished, m_PreferencesWindow.get(), &QDialog::hide);
 }
 
 Wrappers::PreferencesWindow::PreferencesWindow() = default;
+
+void Wrappers::PreferencesWindow::closeEvent(QCloseEvent* event){
+    event->ignore();
+    hide();
+}
 
 QSize Wrappers::SlidersHBoxLayout::sizeHint() const {
     QSize hint = QHBoxLayout::sizeHint();

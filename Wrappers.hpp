@@ -7,15 +7,15 @@
 
 #include <QAction>
 #include <QDialog>
+#include <QHBoxLayout>
+#include <QLabel>
 #include <QMenu>
 #include <QPushButton>
 #include <QSlider>
 #include <QSystemTrayIcon>
 #include <QTimer>
-#include <QHBoxLayout>
-#include <QLabel>
 
-//include leads to circular dependency
+// include leads to circular dependency
 class MainWindow;
 
 namespace Wrappers {
@@ -26,7 +26,7 @@ class BrightnessSlider : public QSlider {
 
     BrightnessSlider() = default;
 
-    void setTimer(QTimer *timer, MainWindow* mainWindow);
+    void setTimer(QTimer *timer, MainWindow *mainWindow);
 };
 
 class ViewChangeButton : public QPushButton {
@@ -35,7 +35,7 @@ class ViewChangeButton : public QPushButton {
 
     ViewChangeButton() = default;
 
-    void setTimer(QTimer *timer, MainWindow* mainWindow);
+    void setTimer(QTimer *timer, MainWindow *mainWindow);
 };
 
 class PreferencesWindow : public QDialog {
@@ -43,29 +43,29 @@ class PreferencesWindow : public QDialog {
     // todo add things
     // stride, bar, shortcuts...
     PreferencesWindow();
+    void closeEvent(QCloseEvent* event) override;
+    
 };
 
 class TrayMenu : public QMenu {
    public:
     TrayMenu();
 
-    std::unique_ptr<PreferencesWindow> m_PreferencesWindow =
-        std::make_unique<PreferencesWindow>();
+    std::unique_ptr<PreferencesWindow> m_PreferencesWindow = std::make_unique<PreferencesWindow>();
+
     std::unique_ptr<QAction> m_Open = std::make_unique<QAction>("Open", this);
 
-    std::unique_ptr<QAction> m_Preferences =
-        std::make_unique<QAction>("Preferences", this);
+    std::unique_ptr<QAction> m_Preferences = std::make_unique<QAction>("Preferences", this);
 
     std::unique_ptr<QAction> m_Exit = std::make_unique<QAction>("Exit", this);
 
-    void connectSignals(MainWindow* mainWindow);
-
+    void connectSignals(MainWindow *mainWindow);
 };
 
 class SlidersHBoxLayout : public QHBoxLayout {
    public:
     //[[nodiscard]] is an attribute specifier in C++ that indicates that a
-    //function's return value should not be ignored.
+    // function's return value should not be ignored.
     [[nodiscard]] QSize sizeHint() const override;
 };
 
