@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.24)
-set(CMAKE_CXX_COMPILER /usr/lib64/ccache/g++)
+set(CMAKE_CXX_COMPILER /usr/bin/g++)
 project(lumid)
 
 set(CMAKE_CXX_FLAGS "-g")

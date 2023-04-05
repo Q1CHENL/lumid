@@ -6,17 +6,18 @@
 #define SLIDER_SLIDER_H
 
 #include <QApplication>
+#include <QLabel>
+#include <QMenu>
+#include <QProcess>
+#include <QPushButton>
+#include <QScreen>
 #include <QSlider>
+#include <QSystemTrayIcon>
+#include <QTimer>
 #include <QVBoxLayout>
 #include <QWidget>
-#include <QProcess>
-#include <QLabel>
-#include <QSystemTrayIcon>
-#include <QPushButton>
-#include <QTimer>
-#include <QMenu>
+
 #include "Wrappers.hpp"
-#include <QScreen>
 
 #define POS_FROM_LEFT_EDGE 50
 #define VERTICAL_POS_FACTOR 0.618
@@ -30,14 +31,14 @@
 using namespace Wrappers;
 
 class MainWindow : public QWidget {
-public:
+   public:
     MainWindow();
 
     static void onExit();
 
     void showOnTopLeft();
 
-private:
+   private:
     int posX;
     int posY;
     bool other_sliders_hidden = true;
@@ -76,10 +77,7 @@ private:
                                         bool currentHidden,
                                         QPushButton *button,
                                         SlidersHBoxLayout *layout,
-                                        std::vector<std::unique_ptr<SliderWithLabelsLayout>> *subLayoutsVex
-    );
-
-
+                                        std::vector<std::unique_ptr<SliderWithLabelsLayout>> *subLayoutsVex);
 };
 
-#endif //SLIDER_SLIDER_H
+#endif  // SLIDER_SLIDER_H

@@ -301,7 +301,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
     if (event->type() == QEvent::MouseButtonPress &&
         (obj == this || obj == generalSlider())) {
         // Do something when the slider is clicked
-        showOnTopLeft();
+        show();
         restartTimerForSecs(&m_Timer, STAY_TIME_LONG);
         return true;
     }
