@@ -1,5 +1,5 @@
 # Note
-Currently problematic detecting display most likely due to ddcutl bug.
+Currently problematic detecting display most likely due to ddcutil bug.
 # Lumid
 A simple Qt GUI that adjusts the display brightness for Linux desktop using ddcutil.<br />
 # Screenshots
