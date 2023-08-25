@@ -160,11 +160,22 @@ void MainWindow::initAllLayouts() {
     subLayoutsVex.emplace_back(std::make_unique<SliderWithLabelsLayout>());
     initLayout(subLayoutsVex.at(0).get(), info, 0, true);
     subLayoutsVex.at(0)->m_DisplayNameLabel.setText("General");
+
+    // init the timer for main slider
+    generalSliderTimer = std::make_unique<QTimer>();
+    generalSliderTimer->setSingleShot(true);
+
+    connect(generalSliderTimer.get(), &QTimer::timeout, this, [&]() {
+        int value = subLayoutsVex.at(0)->m_Slider.value();
+        for (int i = 0; i < displayCount; ++i) {
+            subLayoutsVex.at(i + 1)->m_Slider.setValue(value);
+        }
+        subLayoutsVex.at(0)->m_BrightnessLabel.setText(QString::number(value));
+    });
+
     connect(&(subLayoutsVex.at(0)->m_Slider), &QSlider::valueChanged, this,
             [=](int value) {
-                for (int i = 0; i < displayCount; ++i) {
-                    subLayoutsVex.at(i + 1)->m_Slider.setValue(value);
-                }
+                generalSliderTimer->start(300);
                 subLayoutsVex.at(0)->m_BrightnessLabel.setText(
                     QString::number(value));
             });
@@ -177,56 +188,42 @@ void MainWindow::initAllLayouts() {
     // init except for main layout
     int j = 0;
 
-    for (int i = 0; i < info.size(); i++) {
-        slider_delay_timers.emplace_back(std::make_unique<QTimer>());
-        slider_delay_timers.back()->setSingleShot(true);
-    }
-
     for (int i = 1; i < info.size() + 1; ++i, ++j) {
         initLayout(subLayoutsVex.at(i).get(), info, j, false);
 
-        // std::unique_ptr<QTimer> slider_delay_timer = std::make_unique<QTimer>();
-        // slider_delay_timer.get()->setSingleShot(true);
-
-        connect(slider_delay_timers.at(i - 1).get(), &QTimer::timeout, this, [&, i, j]() {
-            int value = subLayoutsVex.at(i)->m_Slider.value();  // Get the value from the slider
-            QStringList args;
-            QString newValue = QString::number(value);
-            QStringList arguments;
-            // https://www.ddcutil.com/faq/
-            // Option --sleep-multiplier. This option adjusts the length
-            // of time ddcutil spends in DDC/CI mandated waits. For
-            // example, if the DDC/CI protocol specifies a 40 ms wait
-            // between the time a command is sent to the monitor and the
-            // time a reply is read, and --sleep-multiplier .2 is given,
-            // ddcutil will only wait (.2 x 40 ms) = 8 ms. Some monitors
-            // have been found to communicate successfully with
-            // --sleep-multiplier values as low as .1. On the other
-            // hand, some monitors with poor DDC/CI implementations
-            // perform better if the sleep time is increased
-            //  by using a value greater than 1.
-
-            // .03 is generally a relatively safe multiplier value
-            arguments << newValue << "--async"
-                      << "--bus"
-                      << QString::fromStdString(std::get<1>(info.at(j)))
-                      << "--sleep-multiplier" << QString::number(SLEEP_MULTIPLIER);
-            // Note that here sudo is the program, ddcutil is considered
-            // as an argument
-            QProcess::startDetached("sudo", QStringList()
-                                                << "ddcutil"
-                                                << "setvcp"
-                                                << "10" << arguments);
-        });
-
         connect(&(subLayoutsVex.at(i)->m_Slider), &QSlider::valueChanged, this,
-                [&, i](int value) {
-                    // Restart the timer whenever the value changes
-                    slider_delay_timers.at(i - 1)->start(300);
-                    // Update the UI immediately, like the brightness label
-                    subLayoutsVex.at(i)->m_BrightnessLabel.setText(QString::number(value));
-                });
+                [=](int value) {
+                    QStringList args;
+                    QString newValue = QString::number(value);
+                    QStringList arguments;
 
+                    // https://www.ddcutil.com/faq/
+                    // Option --sleep-multiplier. This option adjusts the length
+                    // of time ddcutil spends in DDC/CI mandated waits. For
+                    // example, if the DDC/CI protocol specifies a 40 ms wait
+                    // between the time a command is sent to the monitor and the
+                    // time a reply is read, and --sleep-multiplier .2 is given,
+                    // ddcutil will only wait (.2 x 40 ms) = 8 ms. Some monitors
+                    // have been found to communicate successfully with
+                    // --sleep-multiplier values as low as .1. On the other
+                    // hand, some monitors with poor DDC/CI implementations
+                    // perform better if the sleep time is increased
+                    //  by using a value greater than 1.
+
+                    // .03 is generally a relatively safe multiplier value
+                    arguments << newValue << "--async"
+                              << "--bus"
+                              << QString::fromStdString(std::get<1>(info.at(j)))
+                              << "--sleep-multiplier" << QString::number(SLEEP_MULTIPLIER);
+                    // Note that here sudo is the program, ddcutil is considered
+                    // as an argument
+                    QProcess::startDetached("sudo", QStringList()
+                                                        << "ddcutil"
+                                                        << "setvcp"
+                                                        << "10" << arguments);
+                    subLayoutsVex.at(i)->m_BrightnessLabel.setText(
+                        QString::number(value));
+                });
     }
 }
 
