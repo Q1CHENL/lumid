@@ -54,6 +54,10 @@ class MainWindow : public QWidget {
 
     std::vector<std::unique_ptr<SliderWithLabelsLayout>> subLayoutsVex;
 
+    std::vector<std::unique_ptr<QTimer>> slider_delay_timers;
+
+    std::vector<std::tuple<std::string, std::string, int>> info;
+
     void hideOtherSliders();
 
     void initAllLayouts();

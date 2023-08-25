@@ -1,6 +1,8 @@
 //
 // Created by liuqichen on 2/13/23.
 //
+#include "MainWindow.hpp"
+
 #include <QCloseEvent>
 #include <QDebug>
 #include <QMenu>
@@ -12,7 +14,6 @@
 #include <iostream>
 #include <regex>
 
-#include "MainWindow.hpp"
 #include "Wrappers.hpp"
 
 using namespace Wrappers;
@@ -101,9 +102,6 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 void MainWindow::onExit() { QCoreApplication::quit(); }
 
 void MainWindow::initAllLayouts() {
-    // <display name, bus, brightness>
-    std::vector<std::tuple<std::string, std::string, int>> info;
-
     // Run the ddcutil command to get the display info
     std::array<char, 128> buffer{};
     std::string result;
@@ -123,11 +121,11 @@ void MainWindow::initAllLayouts() {
         // Get the display name
         std::size_t end_pos = result.find('\n', start_pos);
         std::string bus_number =
-                result.substr(start_pos + 19, end_pos - start_pos - 19);
+            result.substr(start_pos + 19, end_pos - start_pos - 19);
         start_pos = result.find("Model:               ", end_pos);
         end_pos = result.find('\n', start_pos);
         std::string display_brand_name =
-                result.substr(start_pos + 22, end_pos - start_pos - 22);
+            result.substr(start_pos + 22, end_pos - start_pos - 22);
         info.emplace_back(display_brand_name, bus_number, 0);
     }
     std::sort(info.begin(), info.end(),
@@ -136,11 +134,11 @@ void MainWindow::initAllLayouts() {
                   return std::get<1>(a) > std::get<1>(b);
               });
 
-    displayCount = (int) info.size();
+    displayCount = (int)info.size();
     for (int i = 0; i < displayCount; i++) {
         std::string result_brightness;
         std::string cmd =
-                "sudo ddcutil getvcp 10 --bus " + std::get<1>(info.at(i));
+            "sudo ddcutil getvcp 10 --bus " + std::get<1>(info.at(i));
         FILE *pipe_brightness = popen(cmd.c_str(), "r");
         // if (!pipe_brightness) return -1;
         char buffer_brightness[128];
@@ -150,7 +148,7 @@ void MainWindow::initAllLayouts() {
         }
         pclose(pipe_brightness);
         // Extract the brightness value from the output
-        int pos = (int) result_brightness.find("current value =   ") + 18;
+        int pos = (int)result_brightness.find("current value =   ") + 18;
         std::string brightnessStr = result_brightness.substr(pos, 3);
         // trim space and assign
         std::get<2>(info.at(i)) = std::stoi(brightnessStr);
@@ -168,7 +166,7 @@ void MainWindow::initAllLayouts() {
                     subLayoutsVex.at(i + 1)->m_Slider.setValue(value);
                 }
                 subLayoutsVex.at(0)->m_BrightnessLabel.setText(
-                        QString::number(value));
+                    QString::number(value));
             });
 
     // init the unique ptrs
@@ -178,48 +176,64 @@ void MainWindow::initAllLayouts() {
 
     // init except for main layout
     int j = 0;
+
+    for (int i = 0; i < info.size(); i++) {
+        slider_delay_timers.emplace_back(std::make_unique<QTimer>());
+        slider_delay_timers.back()->setSingleShot(true);
+    }
+
     for (int i = 1; i < info.size() + 1; ++i, ++j) {
         initLayout(subLayoutsVex.at(i).get(), info, j, false);
 
-        connect(&(subLayoutsVex.at(i)->m_Slider), &QSlider::valueChanged, this,
-                [=](int value) {
-                    QStringList args;
-                    QString newValue = QString::number(value);
-                    QStringList arguments;
-                    // https://www.ddcutil.com/faq/
-                    // Option --sleep-multiplier. This option adjusts the length
-                    // of time ddcutil spends in DDC/CI mandated waits. For
-                    // example, if the DDC/CI protocol specifies a 40 ms wait
-                    // between the time a command is sent to the monitor and the
-                    // time a reply is read, and --sleep-multiplier .2 is given,
-                    // ddcutil will only wait (.2 x 40 ms) = 8 ms. Some monitors
-                    // have been found to communicate successfully with
-                    // --sleep-multiplier values as low as .1. On the other
-                    // hand, some monitors with poor DDC/CI implementations
-                    // perform better if the sleep time is increased
-                    //  by using a value greater than 1.
+        // std::unique_ptr<QTimer> slider_delay_timer = std::make_unique<QTimer>();
+        // slider_delay_timer.get()->setSingleShot(true);
 
-                    // .03 is generally a relatively safe multiplier value
-                    arguments << newValue << "--async"
-                              << "--bus"
-                              << QString::fromStdString(std::get<1>(info.at(j)))
-                              << "--sleep-multiplier" << QString::number(SLEEP_MULTIPLIER);
-                    // Note that here sudo is the program, ddcutil is considered
-                    // as an argument
-                    QProcess::startDetached("sudo", QStringList()
-                            << "ddcutil"
-                            << "setvcp"
-                            << "10" << arguments);
-                    subLayoutsVex.at(i)->m_BrightnessLabel.setText(
-                            QString::number(value));
+        connect(slider_delay_timers.at(i - 1).get(), &QTimer::timeout, this, [&, i, j]() {
+            int value = subLayoutsVex.at(i)->m_Slider.value();  // Get the value from the slider
+            QStringList args;
+            QString newValue = QString::number(value);
+            QStringList arguments;
+            // https://www.ddcutil.com/faq/
+            // Option --sleep-multiplier. This option adjusts the length
+            // of time ddcutil spends in DDC/CI mandated waits. For
+            // example, if the DDC/CI protocol specifies a 40 ms wait
+            // between the time a command is sent to the monitor and the
+            // time a reply is read, and --sleep-multiplier .2 is given,
+            // ddcutil will only wait (.2 x 40 ms) = 8 ms. Some monitors
+            // have been found to communicate successfully with
+            // --sleep-multiplier values as low as .1. On the other
+            // hand, some monitors with poor DDC/CI implementations
+            // perform better if the sleep time is increased
+            //  by using a value greater than 1.
+
+            // .03 is generally a relatively safe multiplier value
+            arguments << newValue << "--async"
+                      << "--bus"
+                      << QString::fromStdString(std::get<1>(info.at(j)))
+                      << "--sleep-multiplier" << QString::number(SLEEP_MULTIPLIER);
+            // Note that here sudo is the program, ddcutil is considered
+            // as an argument
+            QProcess::startDetached("sudo", QStringList()
+                                                << "ddcutil"
+                                                << "setvcp"
+                                                << "10" << arguments);
+        });
+
+        connect(&(subLayoutsVex.at(i)->m_Slider), &QSlider::valueChanged, this,
+                [&, i](int value) {
+                    // Restart the timer whenever the value changes
+                    slider_delay_timers.at(i - 1)->start(300);
+                    // Update the UI immediately, like the brightness label
+                    subLayoutsVex.at(i)->m_BrightnessLabel.setText(QString::number(value));
                 });
+
     }
 }
 
 void MainWindow::initLayout(
-        SliderWithLabelsLayout *layout,
-        std::vector<std::tuple<std::string, std::string, int>> info, int index,
-        bool visible) {
+    SliderWithLabelsLayout *layout,
+    std::vector<std::tuple<std::string, std::string, int>> info, int index,
+    bool visible) {
     std::string displayName = std::get<0>(info.at(index));
     if (index == 0) {
         displayName += "\n(Primary)";
@@ -242,12 +256,12 @@ void MainWindow::initLayout(
 
     // Brightness value label
     layout->m_BrightnessLabel.setText(
-            QString::number(std::get<2>(info.at(index))));
+        QString::number(std::get<2>(info.at(index))));
     setFixedSize(30, 24);
     layout->m_BrightnessLabel.setFrameStyle(QFrame::NoFrame);
     layout->m_BrightnessLabel.setLineWidth(1);
     layout->m_BrightnessLabel.setText(
-            QString::number(std::get<2>(info.at(index))));
+        QString::number(std::get<2>(info.at(index))));
     layout->m_BrightnessLabel.setAlignment(Qt::AlignCenter);
     layout->m_BrightnessLabel.setVisible(visible);
 
@@ -267,9 +281,9 @@ void MainWindow::hideOtherSliders() {
 }
 
 void MainWindow::performHideAndChangeButtonText(
-        const std::string &buttonText, const std::string &windowTitle,
-        bool currentlyHidden, QPushButton *button, SlidersHBoxLayout *layout,
-        std::vector<std::unique_ptr<SliderWithLabelsLayout>> *vex) {
+    const std::string &buttonText, const std::string &windowTitle,
+    bool currentlyHidden, QPushButton *button, SlidersHBoxLayout *layout,
+    std::vector<std::unique_ptr<SliderWithLabelsLayout>> *vex) {
     for (int i = 1; i < vex->size(); i++) {
         other_sliders_hidden = !currentlyHidden;
         switchVisibility(vex->at(i).get(), currentlyHidden);
@@ -291,7 +305,7 @@ BrightnessSlider *MainWindow::generalSlider() {
 }
 
 void MainWindow::addLayouts() {
-    for (const auto &i: subLayoutsVex) {
+    for (const auto &i : subLayoutsVex) {
         m_MainLayout.addLayout(i.get());
     }
 }
