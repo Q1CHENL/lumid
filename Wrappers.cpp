@@ -73,6 +73,7 @@ void Wrappers::restartTimerForSecs(QTimer* timer, int secs) {
 
 Wrappers::TrayMenu::TrayMenu() {
     addAction(m_Open.get());
+    addAction(m_OpenDisplaySetting.get());
     addAction(m_Preferences.get());
     addAction(m_Exit.get());
 }
@@ -80,6 +81,8 @@ Wrappers::TrayMenu::TrayMenu() {
 void Wrappers::TrayMenu::connectSignals(MainWindow* mainWindow) {
     // use "=" to capture ptr to ensure to have a copy
     connect(m_Open.get(), &QAction::triggered, this, [=]() { mainWindow->showOnTopLeft(); });
+    connect(m_OpenDisplaySetting.get(), &QAction::triggered, this, []() { 
+        QProcess::startDetached("gnome-control-center", QStringList() << "display"); });
     connect(m_Preferences.get(), &QAction::triggered, this, [&]() { m_PreferencesWindow->show(); });
     connect(m_Exit.get(), &QAction::triggered, this, [=]() { mainWindow->onExit(); });
     connect(m_PreferencesWindow.get(), &QDialog::finished, m_PreferencesWindow.get(), &QDialog::hide);
@@ -87,7 +90,7 @@ void Wrappers::TrayMenu::connectSignals(MainWindow* mainWindow) {
 
 Wrappers::PreferencesWindow::PreferencesWindow() = default;
 
-void Wrappers::PreferencesWindow::closeEvent(QCloseEvent* event){
+void Wrappers::PreferencesWindow::closeEvent(QCloseEvent* event) {
     event->ignore();
     hide();
 }

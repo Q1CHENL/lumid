@@ -1,7 +1,6 @@
 //
 // Created by liuqichen on 2/13/23.
 //
-#include "MainWindow.hpp"
 
 #include <QBitmap>
 #include <QCloseEvent>
@@ -16,6 +15,7 @@
 #include <iostream>
 #include <regex>
 
+#include "MainWindow.hpp"
 #include "Wrappers.hpp"
 
 using namespace Wrappers;

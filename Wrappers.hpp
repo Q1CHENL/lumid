@@ -53,7 +53,9 @@ class TrayMenu : public QMenu {
 
     std::unique_ptr<PreferencesWindow> m_PreferencesWindow = std::make_unique<PreferencesWindow>();
 
-    std::unique_ptr<QAction> m_Open = std::make_unique<QAction>("Open", this);
+    std::unique_ptr<QAction> m_Open = std::make_unique<QAction>("Open Lumid", this);
+
+    std::unique_ptr<QAction> m_OpenDisplaySetting = std::make_unique<QAction>("Open display setting", this);
 
     std::unique_ptr<QAction> m_Preferences = std::make_unique<QAction>("Preferences", this);
 
