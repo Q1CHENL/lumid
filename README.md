@@ -12,5 +12,4 @@ A simple Qt GUI that adjusts the display brightness for Linux desktop using [ddc
 `sudo dnf install libqxt-qt5-devel.x86_64`
 
 ## Use
-This app has only been tested on my own Fedora 37 desktop. I wrote this because the other extensions/apps did not meet my personal requirement of simplicity and less lagging adjusting the brightness.
-https://github.com/rockowitz/ddcutil
+This app has only been tested on my own Fedora 37 desktop with GNOME 43.7. I wrote this because the other extensions/apps did not meet my personal requirement of simplicity and less lagging adjusting the brightness.
