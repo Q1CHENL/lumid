@@ -3,10 +3,12 @@
 //
 #include "MainWindow.hpp"
 
+#include <QBitmap>
 #include <QCloseEvent>
 #include <QDebug>
 #include <QMenu>
 #include <QMenuBar>
+#include <QPainter>
 #include <QScreen>
 #include <QTimer>
 #include <QxtGlobalShortcut>
@@ -78,6 +80,13 @@ MainWindow::MainWindow() {
     installEventFilter(this);
 
     setLayout(&m_MainLayout);
+
+    this->setWindowFlags(
+        Qt::Window |                    // make the widget a window
+        Qt::FramelessWindowHint |       // disable title bar and buttons on it
+        Qt::Tool |                      // prevent showing in dock
+        Qt::WindowDoesNotAcceptFocus |  // prevent dock showing up but the window is not on top
+        Qt::WindowStaysOnTopHint);      // make the window on top layer
 }
 
 void MainWindow::shortCutsKeyPressed(BrightnessSlider *slider, int stride) {
@@ -86,6 +95,7 @@ void MainWindow::shortCutsKeyPressed(BrightnessSlider *slider, int stride) {
     } else {
         showOnTopLeft();
     }
+    this->lower();  // prevent dock showing up
     slider->setValue(slider->value() + stride);
     restartTimerForSecs(&m_Timer, STAY_TIME_SHORT);  // Start the timer with 3 second timeout
 }
