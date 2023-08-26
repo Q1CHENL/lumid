@@ -1,5 +1,5 @@
 # Lumid
-A simple Qt GUI that adjusts the display brightness for Linux desktop using ddcutil.<br />
+A simple Qt GUI that adjusts the display brightness for Linux desktop using [ddcutil](https://github.com/rockowitz/ddcutil).<br />
 ## Screenshots
 ![UI](focus.png) &nbsp; &nbsp; ![UI](showAll.png)
 
@@ -13,3 +13,4 @@ A simple Qt GUI that adjusts the display brightness for Linux desktop using ddcu
 
 ## Use
 This app has only been tested on my own Fedora 37 desktop. I wrote this because the other extensions/apps did not meet my personal requirement of simplicity and less lagging adjusting the brightness.
+https://github.com/rockowitz/ddcutil
