@@ -10,5 +10,4 @@ int main(int argc, char *argv[])
 
     return QApplication::exec();
 }
-//todo solve bug when multiple at once
 //todo custimize keyboard shortcuts

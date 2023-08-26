@@ -197,7 +197,6 @@ void MainWindow::initAllLayouts() {
 
     // init except for main layout
     int j = 0;
-
     for (int i = 1; i < info.size() + 1; ++i, ++j) {
         initLayout(subLayoutsVex.at(i).get(), info, j, false);
 
@@ -329,7 +328,6 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
     return QObject::eventFilter(obj, event);
 }
 
-// Buggy: different behaviour at startup and open from tray
 void MainWindow::showOnTopLeft() {
     move(posX, posY);
     show();
