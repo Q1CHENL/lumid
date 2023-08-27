@@ -100,6 +100,7 @@ void Wrappers::TrayMenu::connectSignals(MainWindow* mainWindow) {
 }
 
 Wrappers::PreferencesWindow::PreferencesWindow(QWidget* parent) : QDialog(parent, Qt::WindowStaysOnTopHint) {
+    setWindowTitle("Preferences");
     // Get the screen geometry
     QRect screenGeometry = QGuiApplication::screens().at(0)->geometry();
     // Calculate the x and y coordinates
