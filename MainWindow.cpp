@@ -20,16 +20,22 @@
 
 using namespace Wrappers;
 
-MainWindow::MainWindow() {
+// Initializing a member variable like TrayMenu m_TrayMenu(this); directly within
+// the class definition usually works for types with default constructors. However,
+// you're trying to pass this pointer as an argument to TrayMenu, which requires 
+// the MainWindow object to be fully constructed. But m_TrayMenu is also a part of 
+// the MainWindow object, so you're essentially passing an incomplete object to the 
+// constructor of m_TrayMenu.
+MainWindow::MainWindow(): m_TrayMenu(this) {
     setWindowTitle(" ");
     setFixedSize(MAIN_WINDOW_X, MAIN_WINDOW_Y);
     m_MainLayout.setSizeConstraint(QLayout::SetFixedSize);
     setWindowFlags(Qt::Window | Qt::WindowStaysOnTopHint);
 
     // App appears at position posX, posY
-    QRect screenGeometry = QGuiApplication::screens()[0]->geometry();
+    QRect screenGeometry = QGuiApplication::screens().at(0)->geometry();
     posX = screenGeometry.left() + POS_FROM_LEFT_EDGE;
-    posY = (screenGeometry.bottom() - screenGeometry.top()) * VERTICAL_POS_FACTOR;
+    posY = (screenGeometry.bottom() - screenGeometry.top()) * (1 - VERTICAL_POS_FACTOR);
 
     initAllLayouts();
     BrightnessSlider *mainSlider = generalSlider();
@@ -72,10 +78,10 @@ MainWindow::MainWindow() {
     // Connect shortcuts to slider value change signal
     // Qxt will hide keyPressEvent()
     QObject::connect(shortcutF5, &QxtGlobalShortcut::activated, mainSlider,
-                     [=]() { shortCutsKeyPressed(mainSlider, -STRIDE); });
+                     [=]() { shortCutsKeyPressed(mainSlider, -stride); });
 
     QObject::connect(shortcutF6, &QxtGlobalShortcut::activated, mainSlider,
-                     [=]() { shortCutsKeyPressed(mainSlider, STRIDE); });
+                     [=]() { shortCutsKeyPressed(mainSlider, stride); });
 
     installEventFilter(this);
 
@@ -332,4 +338,8 @@ void MainWindow::showOnTopLeft() {
     move(posX, posY);
     show();
     restartTimerForSecs(&m_Timer, STAY_TIME_LONG);
+}
+
+void MainWindow::setStride(int stride) {
+    this->stride = stride;
 }

@@ -2,8 +2,13 @@
 // Created by liuqichen on 3/4/23.
 //
 
-#include <QSystemTrayIcon>
 #include <QCloseEvent>
+#include <QSystemTrayIcon>
+#include <QApplication>
+#include <QGuiApplication>
+#include <QScreen>
+#include <QDesktopWidget>
+#include <QDialog>
 
 #include "Wrappers.hpp"
 #include "MainWindow.hpp"
@@ -22,7 +27,7 @@ void Wrappers::BrightnessSlider::setTimer(QTimer* timer, MainWindow* mainWindow)
     });
 }
 
-void Wrappers::ViewChangeButton::setTimer(QTimer* timer, MainWindow* mainWindow) {
+void Wrappers::ShowAllAndFocusButton::setTimer(QTimer* timer, MainWindow* mainWindow) {
     m_Timer = timer;
     QObject::connect(this, &QPushButton::clicked, this, [=]() {
         mainWindow->show();
@@ -71,7 +76,14 @@ void Wrappers::restartTimerForSecs(QTimer* timer, int secs) {
 // possible, it's a good idea to use signals and slots instead of event
 // filters.
 
-Wrappers::TrayMenu::TrayMenu() {
+Wrappers::TrayMenu::TrayMenu(MainWindow* mainWindow) {
+    // m_PreferencesWindow = std::make_unique<PreferencesWindow>(mainWindow);
+    m_PreferencesWindow = new PreferencesWindow(mainWindow);
+    m_Open = std::make_unique<QAction>("Open Lumid", this);
+    m_OpenDisplaySetting = std::make_unique<QAction>("Open display setting", this);
+    m_Preferences = std::make_unique<QAction>("Preferences", this);
+    m_Exit = std::make_unique<QAction>("Exit", this);
+
     addAction(m_Open.get());
     addAction(m_OpenDisplaySetting.get());
     addAction(m_Preferences.get());
@@ -81,19 +93,53 @@ Wrappers::TrayMenu::TrayMenu() {
 void Wrappers::TrayMenu::connectSignals(MainWindow* mainWindow) {
     // use "=" to capture ptr to ensure to have a copy
     connect(m_Open.get(), &QAction::triggered, this, [=]() { mainWindow->showOnTopLeft(); });
-    connect(m_OpenDisplaySetting.get(), &QAction::triggered, this, []() { 
-        QProcess::startDetached("gnome-control-center", QStringList() << "display"); });
-    connect(m_Preferences.get(), &QAction::triggered, this, [&]() { m_PreferencesWindow->show(); });
+    connect(m_OpenDisplaySetting.get(), &QAction::triggered, this, []() { QProcess::startDetached("gnome-control-center", QStringList() << "display"); });
+    connect(m_Preferences.get(), &QAction::triggered, this, [&]() { m_PreferencesWindow->showCentered(); });
     connect(m_Exit.get(), &QAction::triggered, this, [=]() { mainWindow->onExit(); });
-    connect(m_PreferencesWindow.get(), &QDialog::finished, m_PreferencesWindow.get(), &QDialog::hide);
+    connect(m_PreferencesWindow, &QDialog::finished, m_PreferencesWindow, &QDialog::hide);
 }
 
-Wrappers::PreferencesWindow::PreferencesWindow() = default;
+Wrappers::PreferencesWindow::PreferencesWindow(QWidget* parent) : QDialog(parent, Qt::WindowStaysOnTopHint) {
+    // Get the screen geometry
+    QRect screenGeometry = QGuiApplication::screens().at(0)->geometry();
+    // Calculate the x and y coordinates
+    posX = (screenGeometry.width() - this->width()) / 2;
+    posY = (screenGeometry.height() - this->height()) / 2;
+
+    strideLabel = new QLabel("Stride: ");
+    strideLayout->addWidget(strideLabel);
+    
+    spinbox = new QSpinBox(); // Qt will manage its lifetime
+    spinbox->setMinimum(1);
+    spinbox->setMaximum(100);
+    spinbox->setValue(10);
+
+    applyButton = new QPushButton("Apply", this); // Qt will manage its lifetime
+    connect(applyButton, &QPushButton::clicked, this, &PreferencesWindow::accept);
+
+    strideLayout->addWidget(spinbox);
+    mainLayout->addLayout(strideLayout);
+    mainLayout->addWidget(applyButton);
+    setLayout(mainLayout);
+}
 
 void Wrappers::PreferencesWindow::closeEvent(QCloseEvent* event) {
     event->ignore();
     hide();
 }
+
+void Wrappers::PreferencesWindow::accept() {
+    MainWindow* mw = qobject_cast<MainWindow*>(this->parent());
+    mw->setStride(spinbox->value());
+    // QDialog::accept(); // don't know why this makes the program quit, maybe because qt thinks that the prefs is the last window
+    this->hide();
+}
+
+void Wrappers::PreferencesWindow::showCentered() {
+    this->move(posX, posY);
+    this->show();
+}
+
 
 QSize Wrappers::SlidersHBoxLayout::sizeHint() const {
     QSize hint = QHBoxLayout::sizeHint();

@@ -12,6 +12,7 @@
 #include <QMenu>
 #include <QPushButton>
 #include <QSlider>
+#include <QSpinBox>
 #include <QSystemTrayIcon>
 #include <QTimer>
 
@@ -29,11 +30,11 @@ class BrightnessSlider : public QSlider {
     void setTimer(QTimer *timer, MainWindow *mainWindow);
 };
 
-class ViewChangeButton : public QPushButton {
+class ShowAllAndFocusButton : public QPushButton {
    public:
     QTimer *m_Timer{};
 
-    ViewChangeButton() = default;
+    ShowAllAndFocusButton() = default;
 
     void setTimer(QTimer *timer, MainWindow *mainWindow);
 };
@@ -42,24 +43,43 @@ class PreferencesWindow : public QDialog {
    public:
     // todo add things
     // stride, bar, shortcuts...
-    PreferencesWindow();
-    void closeEvent(QCloseEvent* event) override;
-    
+
+    // In C++, you generally only provide default values
+    // for arguments in the function declaration, not in
+    // the function definition.
+    PreferencesWindow(QWidget *parent);
+    void closeEvent(QCloseEvent *event) override;
+    int getStride() const;
+    void showCentered();
+
+   private:
+    int posX, posY;
+    QLabel* strideLabel;
+
+    QSpinBox* spinbox;
+    QPushButton* applyButton;
+
+    QHBoxLayout* strideLayout = new QHBoxLayout(); // Qt will manage its lifetime
+    QVBoxLayout* mainLayout = new QVBoxLayout(); // Qt will manage its lifetime
+
+   private slots:
+    void accept() override;
 };
 
 class TrayMenu : public QMenu {
    public:
-    TrayMenu();
+    TrayMenu(MainWindow *mainWindow);
 
-    std::unique_ptr<PreferencesWindow> m_PreferencesWindow = std::make_unique<PreferencesWindow>();
+    // std::unique_ptr<PreferencesWindow> m_PreferencesWindow;
+    PreferencesWindow* m_PreferencesWindow;
 
-    std::unique_ptr<QAction> m_Open = std::make_unique<QAction>("Open Lumid", this);
+    std::unique_ptr<QAction> m_Open;
 
-    std::unique_ptr<QAction> m_OpenDisplaySetting = std::make_unique<QAction>("Open display setting", this);
+    std::unique_ptr<QAction> m_OpenDisplaySetting;
 
-    std::unique_ptr<QAction> m_Preferences = std::make_unique<QAction>("Preferences", this);
+    std::unique_ptr<QAction> m_Preferences;
 
-    std::unique_ptr<QAction> m_Exit = std::make_unique<QAction>("Exit", this);
+    std::unique_ptr<QAction> m_Exit;
 
     void connectSignals(MainWindow *mainWindow);
 };

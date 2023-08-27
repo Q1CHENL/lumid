@@ -20,7 +20,7 @@
 #include "Wrappers.hpp"
 
 #define POS_FROM_LEFT_EDGE 50
-#define VERTICAL_POS_FACTOR 0.618
+#define VERTICAL_POS_FACTOR 0.75
 #define SLEEP_MULTIPLIER .03
 #define STAY_TIME_LONG 6.5
 #define STAY_TIME_SHORT 3
@@ -38,13 +38,18 @@ class MainWindow : public QWidget {
 
     void showOnTopLeft();
 
+   void setStride(int stride);
+
    private:
+    Q_OBJECT
+    
     int posX;
     int posY;
     bool other_sliders_hidden = true;
+    int stride = 10;
     QSystemTrayIcon trayIcon;
     SlidersHBoxLayout m_MainLayout;
-    ViewChangeButton hideButton;
+    ShowAllAndFocusButton hideButton;
     QTimer m_Timer;
     QTimer click_tmr;
     TrayMenu m_TrayMenu;
