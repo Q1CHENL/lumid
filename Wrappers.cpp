@@ -101,11 +101,11 @@ void Wrappers::TrayMenu::connectSignals(MainWindow* mainWindow) {
 
 Wrappers::PreferencesWindow::PreferencesWindow(QWidget* parent) : QDialog(parent, Qt::WindowStaysOnTopHint) {
     setWindowTitle("Preferences");
-    // Get the screen geometry
+
+    // Make preferences appear in the center
     QRect screenGeometry = QGuiApplication::screens().at(0)->geometry();
-    // Calculate the x and y coordinates
-    posX = (screenGeometry.width() - this->width()) / 2;
-    posY = (screenGeometry.height() - this->height()) / 2;
+    posX = ((screenGeometry.width() - this->width()) / 2) - this->width() / 2;
+    posY = (screenGeometry.height() - this->height()) / 2 + screenGeometry.top() - this->height() / 2;
 
     strideLabel = new QLabel("Stride: ");
     strideLayout->addWidget(strideLabel);

@@ -22,21 +22,38 @@ using namespace Wrappers;
 
 // Initializing a member variable like TrayMenu m_TrayMenu(this); directly within
 // the class definition usually works for types with default constructors. However,
-// you're trying to pass this pointer as an argument to TrayMenu, which requires 
-// the MainWindow object to be fully constructed. But m_TrayMenu is also a part of 
-// the MainWindow object, so you're essentially passing an incomplete object to the 
+// you're trying to pass this pointer as an argument to TrayMenu, which requires
+// the MainWindow object to be fully constructed. But m_TrayMenu is also a part of
+// the MainWindow object, so you're essentially passing an incomplete object to the
 // constructor of m_TrayMenu.
-MainWindow::MainWindow(): m_TrayMenu(this) {
+MainWindow::MainWindow() : m_TrayMenu(this) {
     setWindowTitle(" ");
     setFixedSize(MAIN_WINDOW_X, MAIN_WINDOW_Y);
     m_MainLayout.setSizeConstraint(QLayout::SetFixedSize);
     setWindowFlags(Qt::Window | Qt::WindowStaysOnTopHint);
 
-    // App appears at position posX, posY
-    QRect screenGeometry = QGuiApplication::screens().at(0)->geometry();
-    posX = screenGeometry.left() + POS_FROM_LEFT_EDGE;
-    posY = (screenGeometry.bottom() - screenGeometry.top()) * (1 - VERTICAL_POS_FACTOR);
-
+    /**
+     * Display geometry in Qt:
+     *             ______
+     *  _________ |      | 
+     * |         ||      |
+     * |         ||      |
+     * |_________||      |   
+     *            |______|
+     * Assume we have 2x 1080 * 1920 displays arranged as above, the whole 
+     * display area qt recognizes is actually (1920 + 1080) * 1920. 
+     * 
+     * So for the primary display (screens.at(0)):
+     * geometry.top() == e.g 466, not 0
+     * geometry.bottom() == e.g 1545, not 1080
+     *  
+     */
+    // App appears at position posX, posY: top left
+    QList<QScreen*> screens = QGuiApplication::screens();
+    QRect primaryGeometry = screens.at(0)->geometry(); // primary display's geometry
+    posX = primaryGeometry.left() + POS_FROM_LEFT_EDGE;
+    posY = primaryGeometry.top() + (primaryGeometry.bottom() - primaryGeometry.top()) * (1 - VERTICAL_POS_FACTOR);
+    
     initAllLayouts();
     BrightnessSlider *mainSlider = generalSlider();
     connect(&m_Timer, SIGNAL(timeout()), this, SLOT(hide()));
