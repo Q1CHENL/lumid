@@ -30,7 +30,6 @@ MainWindow::MainWindow() : m_TrayMenu(this) {
     setWindowTitle(" ");
     setFixedSize(MAIN_WINDOW_X, MAIN_WINDOW_Y);
     m_MainLayout.setSizeConstraint(QLayout::SetFixedSize);
-    setWindowFlags(Qt::Window | Qt::WindowStaysOnTopHint);
 
     /**
      * Display geometry in Qt:
@@ -55,7 +54,8 @@ MainWindow::MainWindow() : m_TrayMenu(this) {
     posY = primaryGeometry.top() + (primaryGeometry.bottom() - primaryGeometry.top()) * (1 - VERTICAL_POS_FACTOR);
     
     initAllLayouts();
-    BrightnessSlider *mainSlider = generalSlider();
+    
+    // BrightnessSlider *mainSlider = generalSlider();
     connect(&m_Timer, SIGNAL(timeout()), this, SLOT(hide()));
     m_TrayMenu.connectSignals(this);
 
@@ -87,22 +87,16 @@ MainWindow::MainWindow() : m_TrayMenu(this) {
             [=]() { MainWindow::hideOtherSliders(); });
 
     subLayoutsVex.at(0)->addWidget(&hideButton);
-
-    // Shortcuts for in-/decreasing brightness
-    auto *shortcutF5 = new QxtGlobalShortcut(QKeySequence(Qt::Key_F5), this);
-    auto *shortcutF6 = new QxtGlobalShortcut(QKeySequence(Qt::Key_F6), this);
-
-    // Connect shortcuts to slider value change signal
-    // Qxt will hide keyPressEvent()
-    QObject::connect(shortcutF5, &QxtGlobalShortcut::activated, mainSlider,
-                     [=]() { shortCutsKeyPressed(mainSlider, -stride); });
-
-    QObject::connect(shortcutF6, &QxtGlobalShortcut::activated, mainSlider,
-                     [=]() { shortCutsKeyPressed(mainSlider, stride); });
-
+    
     installEventFilter(this);
 
     setLayout(&m_MainLayout);
+
+    // default keybindings
+    // Qxt will hide keyPressEvent()
+    bindShortcut(
+        increaseShortcut.get(),
+        decreaseShortcut.get()); 
 
     this->setWindowFlags(
         Qt::Window |                    // make the widget a window
@@ -359,4 +353,18 @@ void MainWindow::showOnTopLeft() {
 
 void MainWindow::setStride(int stride) {
     this->stride = stride;
+}
+
+void MainWindow::setShortcuts(QKeySequence* increase, QKeySequence* decrease){
+      this->increaseShortcut->setShortcut(*increase);
+      this->decreaseShortcut->setShortcut(*decrease);
+}
+
+void MainWindow::bindShortcut(QxtGlobalShortcut* increase, QxtGlobalShortcut* decrease){
+
+    BrightnessSlider* mainSlider = generalSlider();
+    QObject::connect(increase, &QxtGlobalShortcut::activated, mainSlider,
+                     [=]() { shortCutsKeyPressed(mainSlider, stride); });
+    QObject::connect(decrease, &QxtGlobalShortcut::activated, mainSlider,
+                     [=]() { shortCutsKeyPressed(mainSlider, -stride); });
 }

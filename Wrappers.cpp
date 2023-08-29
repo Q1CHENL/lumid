@@ -115,12 +115,31 @@ Wrappers::PreferencesWindow::PreferencesWindow(QWidget* parent) : QDialog(parent
     spinbox->setMaximum(100);
     spinbox->setValue(10);
 
+    keySeqEditIncrease = new QKeySequenceEdit(Qt::Key_F6);
+    keySeqEditDecrease = new QKeySequenceEdit(Qt::Key_F5);
+
+    increaseLabel = new QLabel("Increase: ");
+    increaseLayout->addWidget(increaseLabel);
+    increaseLayout->addWidget(keySeqEditIncrease);
+
+    decreaseLabel = new QLabel("Decrease: ");
+    decreaseLayout->addWidget(decreaseLabel);
+    decreaseLayout->addWidget(keySeqEditDecrease);
+
+    resetButton = new QPushButton("Reset", this);
+    connect(resetButton, &QPushButton::clicked, this, &PreferencesWindow::reset);
+
     applyButton = new QPushButton("Apply", this); // Qt will manage its lifetime
     connect(applyButton, &QPushButton::clicked, this, &PreferencesWindow::accept);
+    
+    bottomButtonLayout->addWidget(resetButton);
+    bottomButtonLayout->addWidget(applyButton);
 
     strideLayout->addWidget(spinbox);
     mainLayout->addLayout(strideLayout);
-    mainLayout->addWidget(applyButton);
+    mainLayout->addLayout(increaseLayout);
+    mainLayout->addLayout(decreaseLayout);
+    mainLayout->addLayout(bottomButtonLayout);
     setLayout(mainLayout);
 }
 
@@ -132,8 +151,31 @@ void Wrappers::PreferencesWindow::closeEvent(QCloseEvent* event) {
 void Wrappers::PreferencesWindow::accept() {
     MainWindow* mw = qobject_cast<MainWindow*>(this->parent());
     mw->setStride(spinbox->value());
-    // QDialog::accept(); // don't know why this makes the program quit, maybe because qt thinks that the prefs is the last window
+
+    std::unique_ptr<QKeySequence> increaseSeq = std::make_unique<QKeySequence>(keySeqEditIncrease->keySequence());
+    std::unique_ptr<QKeySequence> decreaseSeq = std::make_unique<QKeySequence>(keySeqEditDecrease->keySequence());
+
+    mw->setShortcuts(
+        std::make_unique<QKeySequence>(keySeqEditIncrease->keySequence()).get(), 
+        std::make_unique<QKeySequence>(keySeqEditDecrease->keySequence()).get());
+    
+    // don't know why this makes the program quit, maybe because qt thinks that the prefs is the last window
+    // QDialog::accept(); 
     this->hide();
+}
+
+void Wrappers::PreferencesWindow::reset() {
+    // reset stride
+    spinbox->setValue(10);
+    MainWindow* mw = qobject_cast<MainWindow*>(this->parent());
+    mw->setStride(10);
+
+    // reset shortcuts
+    keySeqEditIncrease->setKeySequence(*(std::make_unique<QKeySequence>(Qt::Key_F6).get()));
+    keySeqEditDecrease->setKeySequence(*(std::make_unique<QKeySequence>(Qt::Key_F5).get()));
+    QKeySequence keySeqIn = keySeqEditIncrease->keySequence();
+    QKeySequence keySeqDe = keySeqEditDecrease->keySequence();
+    mw->setShortcuts(&keySeqIn, &keySeqDe);
 }
 
 void Wrappers::PreferencesWindow::showCentered() {

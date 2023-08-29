@@ -1,8 +1,8 @@
 #include <QApplication>
+
 #include "MainWindow.hpp"
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
 
     MainWindow window;
@@ -10,4 +10,4 @@ int main(int argc, char *argv[])
 
     return QApplication::exec();
 }
-//todo custimize keyboard shortcuts
+// todo custimize keyboard shortcuts

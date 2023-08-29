@@ -15,6 +15,7 @@
 #include <QSpinBox>
 #include <QSystemTrayIcon>
 #include <QTimer>
+#include <QKeySequenceEdit>
 
 // include leads to circular dependency
 class MainWindow;
@@ -54,16 +55,31 @@ class PreferencesWindow : public QDialog {
 
    private:
     int posX, posY;
+
     QLabel* strideLabel;
-
     QSpinBox* spinbox;
-    QPushButton* applyButton;
 
-    QHBoxLayout* strideLayout = new QHBoxLayout(); // Qt will manage its lifetime
-    QVBoxLayout* mainLayout = new QVBoxLayout(); // Qt will manage its lifetime
+    QLabel* increaseLabel;
+    QLabel* decreaseLabel;
+    
+    // keybinding edit fields
+    QKeySequenceEdit* keySeqEditIncrease;
+    QKeySequenceEdit* keySeqEditDecrease;
+
+    QPushButton* applyButton;
+    QPushButton* resetButton;
+
+    // Qt will manage their lifetime
+    QHBoxLayout* strideLayout = new QHBoxLayout(); 
+    QHBoxLayout* increaseLayout = new QHBoxLayout();
+    QHBoxLayout* decreaseLayout = new QHBoxLayout();
+    QHBoxLayout* bottomButtonLayout = new QHBoxLayout();
+
+    QVBoxLayout* mainLayout = new QVBoxLayout();
 
    private slots:
     void accept() override;
+    void reset();
 };
 
 class TrayMenu : public QMenu {

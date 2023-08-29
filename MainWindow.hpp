@@ -16,6 +16,7 @@
 #include <QTimer>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <QxtGlobalShortcut>
 
 #include "Wrappers.hpp"
 
@@ -38,7 +39,12 @@ class MainWindow : public QWidget {
 
     void showOnTopLeft();
 
-   void setStride(int stride);
+    void setStride(int stride);
+
+    //todo make pass by ptr or ref
+    void setShortcuts(QKeySequence* increase, QKeySequence* decrease);
+
+    void bindShortcut(QxtGlobalShortcut* increase, QxtGlobalShortcut* decrease);
 
    private:
     Q_OBJECT
@@ -53,6 +59,10 @@ class MainWindow : public QWidget {
     QTimer m_Timer;
     QTimer click_tmr;
     TrayMenu m_TrayMenu;
+
+    std::unique_ptr<QxtGlobalShortcut> increaseShortcut = std::make_unique<QxtGlobalShortcut>(Qt::Key_F6);
+    std::unique_ptr<QxtGlobalShortcut> decreaseShortcut = std::make_unique<QxtGlobalShortcut>(Qt::Key_F5);
+
     int displayCount{};
 
     BrightnessSlider *generalSlider();
