@@ -17,6 +17,8 @@
 #include <QTimer>
 #include <QKeySequenceEdit>
 
+#include "PreferencesWindow.hpp"
+
 // include leads to circular dependency
 class MainWindow;
 
@@ -38,48 +40,6 @@ class ShowAllAndFocusButton : public QPushButton {
     ShowAllAndFocusButton() = default;
 
     void setTimer(QTimer *timer, MainWindow *mainWindow);
-};
-
-class PreferencesWindow : public QDialog {
-   public:
-    // todo add things
-    // stride, bar, shortcuts...
-
-    // In C++, you generally only provide default values
-    // for arguments in the function declaration, not in
-    // the function definition.
-    PreferencesWindow(QWidget *parent);
-    void closeEvent(QCloseEvent *event) override;
-    int getStride() const;
-    void showCentered();
-
-   private:
-    int posX, posY;
-
-    QLabel* strideLabel;
-    QSpinBox* spinbox;
-
-    QLabel* increaseLabel;
-    QLabel* decreaseLabel;
-    
-    // keybinding edit fields
-    QKeySequenceEdit* keySeqEditIncrease;
-    QKeySequenceEdit* keySeqEditDecrease;
-
-    QPushButton* applyButton;
-    QPushButton* resetButton;
-
-    // Qt will manage their lifetime
-    QHBoxLayout* strideLayout = new QHBoxLayout(); 
-    QHBoxLayout* increaseLayout = new QHBoxLayout();
-    QHBoxLayout* decreaseLayout = new QHBoxLayout();
-    QHBoxLayout* bottomButtonLayout = new QHBoxLayout();
-
-    QVBoxLayout* mainLayout = new QVBoxLayout();
-
-   private slots:
-    void accept() override;
-    void reset();
 };
 
 class TrayMenu : public QMenu {

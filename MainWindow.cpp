@@ -17,6 +17,7 @@
 
 #include "MainWindow.hpp"
 #include "Wrappers.hpp"
+#include "PreferencesWindow.hpp"
 
 using namespace Wrappers;
 
