@@ -13,4 +13,4 @@ A simple Qt GUI that adjusts the display brightness for Linux desktop using [ddc
 
 ## Use
 This app has only been tested on my own Fedora 37 desktop with GNOME 43.7. I wrote this because the other extensions/apps did not meet my personal requirement of simplicity and less lagging when adjusting the brightness.
- >**Note: The default keyboard shortcuts for increasing and decreasing brightness are F6 and F5, respectively. Customizing these keyboard bindings is on my to-do list.** 
+ >**Note: The default keyboard shortcuts for increasing and decreasing brightness are F6 and F5, respectively.**
