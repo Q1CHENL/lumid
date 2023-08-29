@@ -8,6 +8,7 @@
 #include <QAction>
 #include <QDialog>
 #include <QHBoxLayout>
+#include <QKeySequenceEdit>
 #include <QLabel>
 #include <QMenu>
 #include <QPushButton>
@@ -15,7 +16,6 @@
 #include <QSpinBox>
 #include <QSystemTrayIcon>
 #include <QTimer>
-#include <QKeySequenceEdit>
 
 #include "PreferencesWindow.hpp"
 
@@ -40,24 +40,6 @@ class ShowAllAndFocusButton : public QPushButton {
     ShowAllAndFocusButton() = default;
 
     void setTimer(QTimer *timer, MainWindow *mainWindow);
-};
-
-class TrayMenu : public QMenu {
-   public:
-    TrayMenu(MainWindow *mainWindow);
-
-    // std::unique_ptr<PreferencesWindow> m_PreferencesWindow;
-    PreferencesWindow* m_PreferencesWindow;
-
-    std::unique_ptr<QAction> m_Open;
-
-    std::unique_ptr<QAction> m_OpenDisplaySetting;
-
-    std::unique_ptr<QAction> m_Preferences;
-
-    std::unique_ptr<QAction> m_Exit;
-
-    void connectSignals(MainWindow *mainWindow);
 };
 
 class SlidersHBoxLayout : public QHBoxLayout {

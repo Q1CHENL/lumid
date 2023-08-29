@@ -2,8 +2,8 @@
 // Created by liuqichen on 2/13/23.
 //
 
-#ifndef SLIDER_SLIDER_H
-#define SLIDER_SLIDER_H
+#ifndef LUMID_MAINWINDOW_H
+#define LUMID_MAINWINDOW_H
 
 #include <QApplication>
 #include <QLabel>
@@ -34,6 +34,10 @@ using namespace Wrappers;
 class MainWindow : public QWidget {
    public:
     MainWindow();
+   
+    QTimer m_Timer;
+
+    PreferencesWindow *m_PreferencesWindow;
 
     static void onExit();
 
@@ -41,24 +45,24 @@ class MainWindow : public QWidget {
 
     void setStride(int stride);
 
-    //todo make pass by ptr or ref
-    void setShortcuts(QKeySequence* increase, QKeySequence* decrease);
+    // todo make pass by ptr or ref
+    void setShortcuts(QKeySequence *increase, QKeySequence *decrease);
 
-    void bindShortcut(QxtGlobalShortcut* increase, QxtGlobalShortcut* decrease);
+    void bindShortcut(QxtGlobalShortcut *increase, QxtGlobalShortcut *decrease);
 
    private:
     Q_OBJECT
-    
+
     int posX;
     int posY;
     bool other_sliders_hidden = true;
     int stride = 10;
-    QSystemTrayIcon trayIcon;
+   //  QSystemTrayIcon trayIcon;
     SlidersHBoxLayout m_MainLayout;
     ShowAllAndFocusButton hideButton;
-    QTimer m_Timer;
+
     QTimer click_tmr;
-    TrayMenu m_TrayMenu;
+   //  TrayMenu m_TrayMenu;
 
     std::unique_ptr<QxtGlobalShortcut> increaseShortcut = std::make_unique<QxtGlobalShortcut>(Qt::Key_F6);
     std::unique_ptr<QxtGlobalShortcut> decreaseShortcut = std::make_unique<QxtGlobalShortcut>(Qt::Key_F5);
@@ -79,7 +83,7 @@ class MainWindow : public QWidget {
 
     void addLayouts();
 
-    void closeEvent(QCloseEvent *event) override;
+   //  void closeEvent(QCloseEvent *event) override;
 
     static void switchVisibility(SliderWithLabelsLayout *layout, bool visible);
 

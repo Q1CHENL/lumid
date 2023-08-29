@@ -2,9 +2,12 @@
 // Created by liuqichen on 2/13/23.
 //
 
+#include "MainWindow.hpp"
+
 #include <QBitmap>
 #include <QCloseEvent>
 #include <QDebug>
+#include <QDialog>
 #include <QMenu>
 #include <QMenuBar>
 #include <QPainter>
@@ -15,9 +18,8 @@
 #include <iostream>
 #include <regex>
 
-#include "MainWindow.hpp"
-#include "Wrappers.hpp"
 #include "PreferencesWindow.hpp"
+#include "Wrappers.hpp"
 
 using namespace Wrappers;
 
@@ -27,7 +29,7 @@ using namespace Wrappers;
 // the MainWindow object to be fully constructed. But m_TrayMenu is also a part of
 // the MainWindow object, so you're essentially passing an incomplete object to the
 // constructor of m_TrayMenu.
-MainWindow::MainWindow() : m_TrayMenu(this) {
+MainWindow::MainWindow() {
     setWindowTitle(" ");
     setFixedSize(MAIN_WINDOW_X, MAIN_WINDOW_Y);
     m_MainLayout.setSizeConstraint(QLayout::SetFixedSize);
@@ -35,48 +37,31 @@ MainWindow::MainWindow() : m_TrayMenu(this) {
     /**
      * Display geometry in Qt:
      *             ______
-     *  _________ |      | 
+     *  _________ |      |
      * |         ||      |
-     * |         ||      |
-     * |_________||      |   
+     * |    0    ||  1   |
+     * |_________||      |
      *            |______|
-     * Assume we have 2x 1080 * 1920 displays arranged as above, the whole 
-     * display area qt recognizes is actually (1920 + 1080) * 1920. 
-     * 
+     * Assume we have 2x 1080 * 1920 displays arranged as above, the whole
+     * display area qt recognizes is actually (1920 + 1080) * 1920.
+     *
      * So for the primary display (screens.at(0)):
      * geometry.top() == e.g 466, not 0
      * geometry.bottom() == e.g 1545, not 1080
-     *  
+     *
      */
     // App appears at position posX, posY: top left
-    QList<QScreen*> screens = QGuiApplication::screens();
-    QRect primaryGeometry = screens.at(0)->geometry(); // primary display's geometry
+    QList<QScreen *> screens = QGuiApplication::screens();
+    QRect primaryGeometry = screens.at(0)->geometry();  // primary display's geometry
     posX = primaryGeometry.left() + POS_FROM_LEFT_EDGE;
     posY = primaryGeometry.top() + (primaryGeometry.bottom() - primaryGeometry.top()) * (1 - VERTICAL_POS_FACTOR);
-    
+
+    // m_PreferencesWindow = new PreferencesWindow();
+
     initAllLayouts();
-    
+
     // BrightnessSlider *mainSlider = generalSlider();
     connect(&m_Timer, SIGNAL(timeout()), this, SLOT(hide()));
-    m_TrayMenu.connectSignals(this);
-
-    // change the path to yours
-    // tray icon does not show using resource image
-    trayIcon.setIcon(QIcon("/usr/share/icons/lumid.png"));
-    trayIcon.setContextMenu(&m_TrayMenu);
-    trayIcon.show();
-
-    // Trigger is default for QMenu. set it to nullptr to customize
-    // First click of double click is recognized as Trigger
-    // I don't why this works, but it works
-    connect(&trayIcon, &QSystemTrayIcon::activated, this,
-            [this](QSystemTrayIcon::ActivationReason reason) {
-                if (reason == QSystemTrayIcon::Trigger) {
-                    m_Timer.stop();
-                    showOnTopLeft();
-                    restartTimerForSecs(&m_Timer, STAY_TIME_LONG);
-                }
-            });
 
     // Add layouts to main
     addLayouts();
@@ -88,7 +73,7 @@ MainWindow::MainWindow() : m_TrayMenu(this) {
             [=]() { MainWindow::hideOtherSliders(); });
 
     subLayoutsVex.at(0)->addWidget(&hideButton);
-    
+
     installEventFilter(this);
 
     setLayout(&m_MainLayout);
@@ -97,13 +82,13 @@ MainWindow::MainWindow() : m_TrayMenu(this) {
     // Qxt will hide keyPressEvent()
     bindShortcut(
         increaseShortcut.get(),
-        decreaseShortcut.get()); 
+        decreaseShortcut.get());
 
     this->setWindowFlags(
         Qt::Window |                    // make the widget a window
         Qt::FramelessWindowHint |       // disable title bar and buttons on it
         Qt::Tool |                      // prevent showing in dock
-        Qt::WindowDoesNotAcceptFocus |  // prevent dock showing up but the window is not on top
+        // Qt::WindowDoesNotAcceptFocus |  // prevent dock showing up but the window is not on top
         Qt::WindowStaysOnTopHint);      // make the window on top layer
 }
 
@@ -116,15 +101,6 @@ void MainWindow::shortCutsKeyPressed(BrightnessSlider *slider, int stride) {
     this->lower();  // prevent dock showing up
     slider->setValue(slider->value() + stride);
     restartTimerForSecs(&m_Timer, STAY_TIME_SHORT);  // Start the timer with 3 second timeout
-}
-
-void MainWindow::closeEvent(QCloseEvent *event) {
-    if (trayIcon.isVisible()) {
-        hide();           // Hide the main window
-        event->ignore();  // Ignore the close event
-    } else {
-        event->accept();  // Exit the application
-    }
 }
 
 void MainWindow::onExit() { QCoreApplication::quit(); }
@@ -349,6 +325,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
 void MainWindow::showOnTopLeft() {
     move(posX, posY);
     show();
+    raise();
     restartTimerForSecs(&m_Timer, STAY_TIME_LONG);
 }
 
@@ -356,14 +333,13 @@ void MainWindow::setStride(int stride) {
     this->stride = stride;
 }
 
-void MainWindow::setShortcuts(QKeySequence* increase, QKeySequence* decrease){
-      this->increaseShortcut->setShortcut(*increase);
-      this->decreaseShortcut->setShortcut(*decrease);
+void MainWindow::setShortcuts(QKeySequence *increase, QKeySequence *decrease) {
+    this->increaseShortcut->setShortcut(*increase);
+    this->decreaseShortcut->setShortcut(*decrease);
 }
 
-void MainWindow::bindShortcut(QxtGlobalShortcut* increase, QxtGlobalShortcut* decrease){
-
-    BrightnessSlider* mainSlider = generalSlider();
+void MainWindow::bindShortcut(QxtGlobalShortcut *increase, QxtGlobalShortcut *decrease) {
+    BrightnessSlider *mainSlider = generalSlider();
     QObject::connect(increase, &QxtGlobalShortcut::activated, mainSlider,
                      [=]() { shortCutsKeyPressed(mainSlider, stride); });
     QObject::connect(decrease, &QxtGlobalShortcut::activated, mainSlider,

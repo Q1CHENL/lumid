@@ -1,35 +1,30 @@
+#include "PreferencesWindow.hpp"
+
+#include <QCloseEvent>
 #include <QDialog>
+#include <QGuiApplication>
 #include <QHBoxLayout>
+#include <QKeySequenceEdit>
 #include <QLabel>
 #include <QPushButton>
-#include <QSpinBox>
-#include <QKeySequenceEdit>
-#include <QGuiApplication>
-#include <QCloseEvent>
 #include <QScreen>
+#include <QSpinBox>
 
-#include "PreferencesWindow.hpp"
 #include "MainWindow.hpp"
 
-
-PreferencesWindow::PreferencesWindow(QWidget* parent) : QDialog(parent, Qt::WindowStaysOnTopHint) {
+PreferencesWindow::PreferencesWindow() : QDialog() {
     setWindowTitle("Preferences");
 
-    strideLayout = new QHBoxLayout(); 
-    increaseLayout = new QHBoxLayout(); 
+    strideLayout = new QHBoxLayout();
+    increaseLayout = new QHBoxLayout();
     decreaseLayout = new QHBoxLayout();
     bottomButtonLayout = new QHBoxLayout();
     mainLayout = new QVBoxLayout();
 
-    // Make preferences appear in the center
-    QRect screenGeometry = QGuiApplication::screens().at(0)->geometry();
-    posX = ((screenGeometry.width() - this->width()) / 2) - this->width() / 2;
-    posY = (screenGeometry.height() - this->height()) / 2 + screenGeometry.top() - this->height() / 2;
-
     strideLabel = new QLabel("Stride: ");
     strideLayout->addWidget(strideLabel);
-    
-    spinbox = new QSpinBox(); // Qt will manage its lifetime
+
+    spinbox = new QSpinBox();  // Qt will manage its lifetime
     spinbox->setMinimum(1);
     spinbox->setMaximum(100);
     spinbox->setValue(10);
@@ -46,11 +41,9 @@ PreferencesWindow::PreferencesWindow(QWidget* parent) : QDialog(parent, Qt::Wind
     decreaseLayout->addWidget(keySeqEditDecrease);
 
     resetButton = new QPushButton("Reset", this);
-    connect(resetButton, &QPushButton::clicked, this, &PreferencesWindow::reset);
 
-    applyButton = new QPushButton("Apply", this); // Qt will manage its lifetime
-    connect(applyButton, &QPushButton::clicked, this, &PreferencesWindow::accept);
-    
+    applyButton = new QPushButton("Apply", this);  // Qt will manage its lifetime
+
     bottomButtonLayout->addWidget(resetButton);
     bottomButtonLayout->addWidget(applyButton);
 
@@ -60,6 +53,11 @@ PreferencesWindow::PreferencesWindow(QWidget* parent) : QDialog(parent, Qt::Wind
     mainLayout->addLayout(decreaseLayout);
     mainLayout->addLayout(bottomButtonLayout);
     setLayout(mainLayout);
+
+    // Make preferences appear in the center
+    QRect screenGeometry = QGuiApplication::screens().at(0)->geometry();
+    posX = ((screenGeometry.width() - this->width()) / 2) - this->width() / 2;
+    posY = (screenGeometry.height() - this->height()) / 2 + screenGeometry.top() - this->height() / 2;
 }
 
 void PreferencesWindow::closeEvent(QCloseEvent* event) {
@@ -67,37 +65,12 @@ void PreferencesWindow::closeEvent(QCloseEvent* event) {
     hide();
 }
 
-void PreferencesWindow::accept() {
-    MainWindow* mw = qobject_cast<MainWindow*>(this->parent());
-    mw->setStride(spinbox->value());
 
-    std::unique_ptr<QKeySequence> increaseSeq = std::make_unique<QKeySequence>(keySeqEditIncrease->keySequence());
-    std::unique_ptr<QKeySequence> decreaseSeq = std::make_unique<QKeySequence>(keySeqEditDecrease->keySequence());
+void PreferencesWindow::showEvent(QShowEvent* event) {
+    QDialog::showEvent(event);
 
-    mw->setShortcuts(
-        std::make_unique<QKeySequence>(keySeqEditIncrease->keySequence()).get(), 
-        std::make_unique<QKeySequence>(keySeqEditDecrease->keySequence()).get());
-    
-    // don't know why this makes the program quit, maybe because qt thinks that the prefs is the last window
-    // QDialog::accept(); 
-    this->hide();
-}
-
-void PreferencesWindow::reset() {
-    // reset stride
-    spinbox->setValue(10);
-    MainWindow* mw = qobject_cast<MainWindow*>(this->parent());
-    mw->setStride(10);
-
-    // reset shortcuts
-    keySeqEditIncrease->setKeySequence(*(std::make_unique<QKeySequence>(Qt::Key_F6).get()));
-    keySeqEditDecrease->setKeySequence(*(std::make_unique<QKeySequence>(Qt::Key_F5).get()));
-    QKeySequence keySeqIn = keySeqEditIncrease->keySequence();
-    QKeySequence keySeqDe = keySeqEditDecrease->keySequence();
-    mw->setShortcuts(&keySeqIn, &keySeqDe);
-}
-
-void PreferencesWindow::showCentered() {
+    QRect screenGeometry = QGuiApplication::screens().at(0)->geometry();
+    posX = ((screenGeometry.width() - this->width()) / 2);
+    posY = (screenGeometry.height() - this->height()) / 2 + screenGeometry.top();
     this->move(posX, posY);
-    this->show();
 }

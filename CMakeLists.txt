@@ -21,7 +21,7 @@ include_directories(/usr/include/qt5/QxtCore)
 find_library(QTX_CORE_LIB QxtCore-qt5 HINTS /usr/lib64/)
 find_library(QTX_WIDGETS_LIB QxtWidgets-qt5 HINTS /usr/lib64/)
 
-add_executable(lumid Main.cpp MainWindow.cpp PreferencesWindow.cpp Wrappers.cpp )
+add_executable(lumid Main.cpp MainWindow.cpp PreferencesWindow.cpp Wrappers.cpp TrayMenu.cpp)
 target_link_libraries(lumid
         Qt5::Core
         Qt5::Gui

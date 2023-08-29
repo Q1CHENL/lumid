@@ -2,15 +2,16 @@
 // Created by liuqichen on 3/4/23.
 //
 
-#include <QCloseEvent>
-#include <QSystemTrayIcon>
+#include "Wrappers.hpp"
+
 #include <QApplication>
-#include <QGuiApplication>
-#include <QScreen>
+#include <QCloseEvent>
 #include <QDesktopWidget>
 #include <QDialog>
+#include <QGuiApplication>
+#include <QScreen>
+#include <QSystemTrayIcon>
 
-#include "Wrappers.hpp"
 #include "MainWindow.hpp"
 #include "PreferencesWindow.hpp"
 
@@ -76,29 +77,6 @@ void Wrappers::restartTimerForSecs(QTimer* timer, int secs) {
 // not easily expressed with signals and slots. But in general, whenever
 // possible, it's a good idea to use signals and slots instead of event
 // filters.
-
-Wrappers::TrayMenu::TrayMenu(MainWindow* mainWindow) {
-    // m_PreferencesWindow = std::make_unique<PreferencesWindow>(mainWindow);
-    m_PreferencesWindow = new PreferencesWindow(mainWindow);
-    m_Open = std::make_unique<QAction>("Open Lumid", this);
-    m_OpenDisplaySetting = std::make_unique<QAction>("Open display setting", this);
-    m_Preferences = std::make_unique<QAction>("Preferences", this);
-    m_Exit = std::make_unique<QAction>("Exit", this);
-
-    addAction(m_Open.get());
-    addAction(m_OpenDisplaySetting.get());
-    addAction(m_Preferences.get());
-    addAction(m_Exit.get());
-}
-
-void Wrappers::TrayMenu::connectSignals(MainWindow* mainWindow) {
-    // use "=" to capture ptr to ensure to have a copy
-    connect(m_Open.get(), &QAction::triggered, this, [=]() { mainWindow->showOnTopLeft(); });
-    connect(m_OpenDisplaySetting.get(), &QAction::triggered, this, []() { QProcess::startDetached("gnome-control-center", QStringList() << "display"); });
-    connect(m_Preferences.get(), &QAction::triggered, this, [&]() { m_PreferencesWindow->showCentered(); });
-    connect(m_Exit.get(), &QAction::triggered, this, [=]() { mainWindow->onExit(); });
-    connect(m_PreferencesWindow, &QDialog::finished, m_PreferencesWindow, &QDialog::hide);
-}
 
 QSize Wrappers::SlidersHBoxLayout::sizeHint() const {
     QSize hint = QHBoxLayout::sizeHint();

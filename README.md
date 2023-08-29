@@ -1,7 +1,7 @@
 # Lumid
 A simple Qt GUI that adjusts the display brightness for Linux desktop using [ddcutil](https://github.com/rockowitz/ddcutil).<br />
 ## Screenshots
-![UI](focus.png) &nbsp; &nbsp; ![UI](showAll.png)
+![UI](assets/focus.png) &nbsp; &nbsp; ![UI](assets/showAll.png)
 
 ## Build
 1. Install ddcutil: `dnf install ddcutil`
