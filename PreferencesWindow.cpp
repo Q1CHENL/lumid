@@ -65,7 +65,6 @@ void PreferencesWindow::closeEvent(QCloseEvent* event) {
     hide();
 }
 
-
 void PreferencesWindow::showEvent(QShowEvent* event) {
     QDialog::showEvent(event);
 

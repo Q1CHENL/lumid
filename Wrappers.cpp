@@ -4,14 +4,6 @@
 
 #include "Wrappers.hpp"
 
-#include <QApplication>
-#include <QCloseEvent>
-#include <QDesktopWidget>
-#include <QDialog>
-#include <QGuiApplication>
-#include <QScreen>
-#include <QSystemTrayIcon>
-
 #include "MainWindow.hpp"
 #include "PreferencesWindow.hpp"
 

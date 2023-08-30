@@ -5,16 +5,8 @@
 #ifndef LUMID_MAINWINDOW_H
 #define LUMID_MAINWINDOW_H
 
-#include <QApplication>
-#include <QLabel>
-#include <QMenu>
-#include <QProcess>
 #include <QPushButton>
-#include <QScreen>
-#include <QSlider>
-#include <QSystemTrayIcon>
 #include <QTimer>
-#include <QVBoxLayout>
 #include <QWidget>
 #include <QxtGlobalShortcut>
 
@@ -34,7 +26,7 @@ using namespace Wrappers;
 class MainWindow : public QWidget {
    public:
     MainWindow();
-   
+
     QTimer m_Timer;
 
     PreferencesWindow *m_PreferencesWindow;
@@ -57,12 +49,10 @@ class MainWindow : public QWidget {
     int posY;
     bool other_sliders_hidden = true;
     int stride = 10;
-   //  QSystemTrayIcon trayIcon;
     SlidersHBoxLayout m_MainLayout;
     ShowAllAndFocusButton hideButton;
 
     QTimer click_tmr;
-   //  TrayMenu m_TrayMenu;
 
     std::unique_ptr<QxtGlobalShortcut> increaseShortcut = std::make_unique<QxtGlobalShortcut>(Qt::Key_F6);
     std::unique_ptr<QxtGlobalShortcut> decreaseShortcut = std::make_unique<QxtGlobalShortcut>(Qt::Key_F5);
@@ -71,7 +61,7 @@ class MainWindow : public QWidget {
 
     BrightnessSlider *generalSlider();
 
-    std::vector<std::unique_ptr<SliderWithLabelsLayout>> subLayoutsVex;
+    std::vector<std::unique_ptr<SliderWithLabelsLayout>> sliderLayouts;
 
     std::unique_ptr<QTimer> generalSliderTimer;
 
@@ -83,7 +73,7 @@ class MainWindow : public QWidget {
 
     void addLayouts();
 
-   //  void closeEvent(QCloseEvent *event) override;
+    //  void closeEvent(QCloseEvent *event) override;
 
     static void switchVisibility(SliderWithLabelsLayout *layout, bool visible);
 

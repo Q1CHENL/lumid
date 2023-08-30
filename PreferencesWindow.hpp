@@ -14,7 +14,6 @@
 #ifndef LUMID_PREFERENCESWINDOW_HPP
 #define LUMID_PREFERENCESWINDOW_HPP
 
-#include <QAction>
 #include <QDialog>
 #include <QHBoxLayout>
 #include <QKeySequenceEdit>
@@ -24,7 +23,6 @@
 
 class PreferencesWindow : public QDialog {
    public:
-
     // In C++, you generally only provide default values
     // for arguments in the function declaration, not in
     // the function definition.

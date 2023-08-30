@@ -1,27 +1,16 @@
 #include <QApplication>
-#include <QBitmap>
-#include <QCloseEvent>
-#include <QDebug>
-#include <QDialog>
-#include <QFlags>
-#include <QMenu>
-#include <QMenuBar>
 #include <QObject>
-#include <QPainter>
-#include <QScreen>
-#include <QTimer>
-#include <QxtGlobalShortcut>
-#include <QDialog>
+#include <QSystemTrayIcon>
 
 #include "MainWindow.hpp"
 #include "PreferencesWindow.hpp"
 #include "TrayMenu.hpp"
 
 /**
- * @brief 
- * Here we initilize our program and handle all external 
- * couplings between MainWindow, TrayIcon, TrayMenu and 
- * PreferencesWindow Objects.  
+ * @brief
+ * Here we initilize our program and handle all external
+ * couplings between MainWindow, TrayIcon, TrayMenu and
+ * PreferencesWindow Objects.
  */
 int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
@@ -37,7 +26,7 @@ int main(int argc, char* argv[]) {
     preferencesWindow.setWindowFlags(preferencesWindow.windowFlags() | Qt::WindowStaysOnTopHint);
 
     // set up tray icon
-    // trayIcon.setIcon(QIcon("/usr/share/icons/lumid.png"));    
+    // trayIcon.setIcon(QIcon("/usr/share/icons/lumid.png"));
     trayIcon.setIcon(QIcon("../assets/icon-2nd-version.png"));
     trayIcon.setContextMenu(&trayMenu);
     trayIcon.show();
@@ -51,7 +40,6 @@ int main(int argc, char* argv[]) {
                              restartTimerForSecs(&(mainWindow.m_Timer), STAY_TIME_LONG);
                          }
                      });
-
 
     QObject::connect(preferencesWindow.applyButton, &QPushButton::clicked, &preferencesWindow, [&]() {
         mainWindow.setStride(preferencesWindow.spinbox->value());

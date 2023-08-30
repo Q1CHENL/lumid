@@ -3,11 +3,9 @@
 
 #include <QAction>
 #include <QMenu>
-#include <QSpinBox>
-#include <QSystemTrayIcon>
 
-#include "PreferencesWindow.hpp"
 #include "MainWindow.hpp"
+#include "PreferencesWindow.hpp"
 
 class TrayMenu : public QMenu {
    public:
@@ -21,7 +19,7 @@ class TrayMenu : public QMenu {
 
     std::unique_ptr<QAction> m_Exit;
 
-    void connectSignals(MainWindow *mainWindow, PreferencesWindow* prefsWindow);
+    void connectSignals(MainWindow* mainWindow, PreferencesWindow* prefsWindow);
 };
 
 #endif

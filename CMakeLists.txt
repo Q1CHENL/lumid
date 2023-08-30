@@ -28,5 +28,4 @@ target_link_libraries(lumid
         Qt5::Widgets
         ${QTX_CORE_LIB}
         ${QTX_WIDGETS_LIB}
-        )
-
+)

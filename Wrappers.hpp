@@ -5,16 +5,10 @@
 #ifndef LUMID_WRAPPERS_HPP
 #define LUMID_WRAPPERS_HPP
 
-#include <QAction>
-#include <QDialog>
 #include <QHBoxLayout>
-#include <QKeySequenceEdit>
 #include <QLabel>
-#include <QMenu>
 #include <QPushButton>
 #include <QSlider>
-#include <QSpinBox>
-#include <QSystemTrayIcon>
 #include <QTimer>
 
 #include "PreferencesWindow.hpp"

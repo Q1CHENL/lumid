@@ -4,18 +4,11 @@
 
 #include "MainWindow.hpp"
 
-#include <QBitmap>
-#include <QCloseEvent>
-#include <QDebug>
-#include <QDialog>
-#include <QMenu>
-#include <QMenuBar>
-#include <QPainter>
+#include <QGuiApplication>
+#include <QProcess>
 #include <QScreen>
-#include <QTimer>
 #include <QxtGlobalShortcut>
 #include <algorithm>
-#include <iostream>
 #include <regex>
 
 #include "PreferencesWindow.hpp"
@@ -72,7 +65,7 @@ MainWindow::MainWindow() {
     connect(&hideButton, &QPushButton::clicked, this,
             [=]() { MainWindow::hideOtherSliders(); });
 
-    subLayoutsVex.at(0)->addWidget(&hideButton);
+    sliderLayouts.at(0)->addWidget(&hideButton);
 
     installEventFilter(this);
 
@@ -85,11 +78,11 @@ MainWindow::MainWindow() {
         decreaseShortcut.get());
 
     this->setWindowFlags(
-        Qt::Window |                    // make the widget a window
-        Qt::FramelessWindowHint |       // disable title bar and buttons on it
-        Qt::Tool |                      // prevent showing in dock
+        Qt::Window |               // make the widget a window
+        Qt::FramelessWindowHint |  // disable title bar and buttons on it
+        Qt::Tool |                 // prevent showing in dock
         // Qt::WindowDoesNotAcceptFocus |  // prevent dock showing up but the window is not on top
-        Qt::WindowStaysOnTopHint);      // make the window on top layer
+        Qt::WindowStaysOnTopHint);  // make the window on top layer
 }
 
 void MainWindow::shortCutsKeyPressed(BrightnessSlider *slider, int stride) {
@@ -161,40 +154,40 @@ void MainWindow::initAllLayouts() {
     // init main layout
     // make unique directly, don't use std::unique_ptr ptr = make_unique...
     // that it will be deleted out of scope
-    subLayoutsVex.emplace_back(std::make_unique<SliderWithLabelsLayout>());
-    initLayout(subLayoutsVex.at(0).get(), info, 0, true);
-    subLayoutsVex.at(0)->m_DisplayNameLabel.setText("General");
+    sliderLayouts.emplace_back(std::make_unique<SliderWithLabelsLayout>());
+    initLayout(sliderLayouts.at(0).get(), info, 0, true);
+    sliderLayouts.at(0)->m_DisplayNameLabel.setText("General");
 
     // init the timer for main slider
     generalSliderTimer = std::make_unique<QTimer>();
     generalSliderTimer->setSingleShot(true);
 
     connect(generalSliderTimer.get(), &QTimer::timeout, this, [&]() {
-        int value = subLayoutsVex.at(0)->m_Slider.value();
+        int value = sliderLayouts.at(0)->m_Slider.value();
         for (int i = 0; i < displayCount; ++i) {
-            subLayoutsVex.at(i + 1)->m_Slider.setValue(value);
+            sliderLayouts.at(i + 1)->m_Slider.setValue(value);
         }
-        subLayoutsVex.at(0)->m_BrightnessLabel.setText(QString::number(value));
+        sliderLayouts.at(0)->m_BrightnessLabel.setText(QString::number(value));
     });
 
-    connect(&(subLayoutsVex.at(0)->m_Slider), &QSlider::valueChanged, this,
+    connect(&(sliderLayouts.at(0)->m_Slider), &QSlider::valueChanged, this,
             [=](int value) {
                 generalSliderTimer->start(300);
-                subLayoutsVex.at(0)->m_BrightnessLabel.setText(
+                sliderLayouts.at(0)->m_BrightnessLabel.setText(
                     QString::number(value));
             });
 
     // init the unique ptrs
     for (int i = 0; i < info.size(); ++i) {
-        subLayoutsVex.emplace_back(std::make_unique<SliderWithLabelsLayout>());
+        sliderLayouts.emplace_back(std::make_unique<SliderWithLabelsLayout>());
     }
 
     // init except for main layout
     int j = 0;
     for (int i = 1; i < info.size() + 1; ++i, ++j) {
-        initLayout(subLayoutsVex.at(i).get(), info, j, false);
+        initLayout(sliderLayouts.at(i).get(), info, j, false);
 
-        connect(&(subLayoutsVex.at(i)->m_Slider), &QSlider::valueChanged, this,
+        connect(&(sliderLayouts.at(i)->m_Slider), &QSlider::valueChanged, this,
                 [=](int value) {
                     QStringList args;
                     QString newValue = QString::number(value);
@@ -224,7 +217,7 @@ void MainWindow::initAllLayouts() {
                                                         << "ddcutil"
                                                         << "setvcp"
                                                         << "10" << arguments);
-                    subLayoutsVex.at(i)->m_BrightnessLabel.setText(
+                    sliderLayouts.at(i)->m_BrightnessLabel.setText(
                         QString::number(value));
                 });
     }
@@ -273,11 +266,11 @@ void MainWindow::hideOtherSliders() {
     if (other_sliders_hidden) {
         performHideAndChangeButtonText("Focus", "Lumid", other_sliders_hidden,
                                        &hideButton, &m_MainLayout,
-                                       &subLayoutsVex);
+                                       &sliderLayouts);
         return;
     }
     performHideAndChangeButtonText("Show All", " ", other_sliders_hidden,
-                                   &hideButton, &m_MainLayout, &subLayoutsVex);
+                                   &hideButton, &m_MainLayout, &sliderLayouts);
 }
 
 void MainWindow::performHideAndChangeButtonText(
@@ -301,11 +294,11 @@ void MainWindow::switchVisibility(SliderWithLabelsLayout *layout,
 }
 
 BrightnessSlider *MainWindow::generalSlider() {
-    return &subLayoutsVex.at(0).get()->m_Slider;
+    return &sliderLayouts.at(0).get()->m_Slider;
 }
 
 void MainWindow::addLayouts() {
-    for (const auto &i : subLayoutsVex) {
+    for (const auto &i : sliderLayouts) {
         m_MainLayout.addLayout(i.get());
     }
 }
