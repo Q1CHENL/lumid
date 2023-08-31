@@ -1,14 +1,8 @@
 #include "PreferencesWindow.hpp"
 
 #include <QCloseEvent>
-#include <QDialog>
 #include <QGuiApplication>
-#include <QHBoxLayout>
-#include <QKeySequenceEdit>
-#include <QLabel>
-#include <QPushButton>
 #include <QScreen>
-#include <QSpinBox>
 
 #include "MainWindow.hpp"
 

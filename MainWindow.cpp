@@ -7,7 +7,6 @@
 #include <QGuiApplication>
 #include <QProcess>
 #include <QScreen>
-#include <QxtGlobalShortcut>
 #include <algorithm>
 #include <regex>
 

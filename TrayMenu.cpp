@@ -1,6 +1,5 @@
 #include "TrayMenu.hpp"
 
-#include <QAction>
 #include <QProcess>
 
 #include "MainWindow.hpp"
