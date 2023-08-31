@@ -41,7 +41,6 @@ PreferencesWindow::PreferencesWindow() : QDialog() {
     decreaseLayout->addWidget(keySeqEditDecrease);
 
     resetButton = new QPushButton("Reset", this);
-
     applyButton = new QPushButton("Apply", this);  // Qt will manage its lifetime
 
     bottomButtonLayout->addWidget(resetButton);
