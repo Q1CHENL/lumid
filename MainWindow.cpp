@@ -101,7 +101,7 @@ void MainWindow::initAllLayouts() {
     // Run the ddcutil command to get the display info
     std::array<char, 128> buffer{};
     std::string result;
-    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen("ddcutil detect", "r"),
+    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen("sudo ddcutil detect", "r"),
                                                   pclose);
     if (!pipe) {
         throw std::runtime_error("Failed to run ddcutil command");

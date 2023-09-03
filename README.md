@@ -1,6 +1,6 @@
 # Lumid
 
-A simple Qt GUI that adjusts the display brightness for Linux desktop using [ddcutil](https://github.com/rockowitz/ddcutil).<br />
+A simple Qt GUI that adjusts the display brightness for Linux desktop using [ddcutil](https://github.com/rockowitz/ddcutil).
 
 ## Screenshots
 
@@ -9,11 +9,10 @@ A simple Qt GUI that adjusts the display brightness for Linux desktop using [ddc
 ## Build
 
 1. Install ddcutil: `dnf install ddcutil`
+2. Intall qt5 and qxt: `dnf install sudo dnf install qt5-qtbase-devel qt5-qtmultimedia-devel qt5-qtwebkit-devel qt5-qttools-devel libqxt-qt5-devel`
 2. You may need to change the Qt version in CMakeLists.txt to the one you are using.
 3. ddcutil requires sudo. You may need to adjust your system settings to avoid entering password. One method could be:
 `sudo visudo` in terminal, comment out `%wheel        ALL=(ALL)       ALL` and comment in `%wheel  ALL=(ALL)       NOPASSWD: ALL`.
-4. Global shortcuts requires Qxt Libraries. You can install them using your package manager. For example on Fedora:<br />
-`sudo dnf install libqxt-qt5-devel.x86_64`
 
 ## Use
 
@@ -22,4 +21,9 @@ This app has only been tested on my own Fedora 37 desktop with GNOME 43.7. I wro
 
 ## Known Issues
 
-Title bar color does not change along with system theme.
+- Title bar color does not change along with system theme.
+
+- Following errors may occur due to Fedora kernel (above 6.0.18) compatibility: 
+`QObject::connect: No such signal QPlatformNativeInterface::systemTrayWindowChanged(QScreen*)`
+
+- Following errors may occur due to Nvidia Driver compatibility: `QxtGlobalShortcut failed to register: "F5" QxtGlobalShortcut failed to register: "F6"` <br /> You may also see "Night Light Unavailable", "This could be the result of the graphics driver being used, or the desktop being used remotely" in System Display Setting.
