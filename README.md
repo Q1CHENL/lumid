@@ -23,7 +23,15 @@ This app has only been tested on my own Fedora 37 desktop with GNOME 43.7. I wro
 
 - Title bar color does not change along with system theme.
 
-- Following errors may occur due to Fedora kernel (above 6.0.18) compatibility: 
-`QObject::connect: No such signal QPlatformNativeInterface::systemTrayWindowChanged(QScreen*)`
+- Following errors may occur on **Wayland** due to its compatibility issues with GNOME:
 
-- Following errors may occur due to Nvidia Driver compatibility: `QxtGlobalShortcut failed to register: "F5" QxtGlobalShortcut failed to register: "F6"` <br /> You may also see "Night Light Unavailable", "This could be the result of the graphics driver being used, or the desktop being used remotely" in System Display Setting.
+  `QObject::connect: No such signal QPlatformNativeInterface::systemTrayWindowChanged(QScreen*)`
+
+  `QxtGlobalShortcut failed to register: "F5"`
+
+  `QxtGlobalShortcut failed to register: "F6"`
+  
+  You may also see "Night Light Unavailable", "This could be the result of the graphics driver being used, or the desktop being used remotely" in System Display Setting.
+
+  **So please use Xorg instead! To switch to Xorg, please log out and select Xorg from the bottom-right corner of the login screen.**
+  >Current issue on GNOME 44 with Xorg is that the SystemTray does not show up, but adjustment itself works.
