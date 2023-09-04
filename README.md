@@ -16,7 +16,7 @@ A simple Qt GUI that adjusts the display brightness for Linux desktop using [ddc
 
 ## Use
 
-This app has only been tested on my own Fedora 37 desktop with GNOME 43.7. I wrote this because the other extensions/apps did not meet my personal requirement of simplicity and less lagging when adjusting the brightness.
+This app has only been tested on my own Fedora 37 desktop with GNOME 43.7. I wrote this because the other extensions/apps did not meet my personal requirement of simplicity, less lagging and customizable shortcuts when adjusting the brightness.
  >**Note: The default keyboard shortcuts for increasing and decreasing brightness are F6 and F5, respectively.**
 
 ## Known Issues
@@ -34,4 +34,4 @@ This app has only been tested on my own Fedora 37 desktop with GNOME 43.7. I wro
   You may also see "Night Light Unavailable", "This could be the result of the graphics driver being used, or the desktop being used remotely" in System Display Setting.
 
   **So please use Xorg instead! To switch to Xorg, please log out and select Xorg from the bottom-right corner of the login screen.**
-  >Current issue on GNOME 44 with Xorg is that the SystemTray does not show up, but adjustment itself works.
+  >Note: for the tray icon of lumid and other Apps to show up, you need to install 3rd-party gnome extensions like [Appindicator](https://extensions.gnome.org/extension/615/appindicator-support/). However, the new version the author mentioned in the comment section does not work with lumid properly so please stick to the current version on GNOME Extension for now.
