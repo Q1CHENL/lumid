@@ -35,3 +35,8 @@ This app has only been tested on my own Fedora 37 with GNOME 43.7 and Fefora 38 
 
   **So please use Xorg instead! To switch to Xorg, please log out and select Xorg from the bottom-right corner of the login screen.**
   >Note: for the tray icon of lumid and other Apps to show up, you need to install 3rd-party gnome extensions like [Appindicator](https://extensions.gnome.org/extension/615/appindicator-support/). However, the new version the author mentioned in the comment section does not work with lumid properly so please stick to the current version on GNOME Extension for now.
+- Unlike GNOME Extensions [Soft Brightness Plus](https://extensions.gnome.org/extension/5943/soft-brightness-plus/), Lumid does not change Brightness instantly when slider value changes. This is due to lagging of ddcutil, not the app itself. 
+
+
+
+
