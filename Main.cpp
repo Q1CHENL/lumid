@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
     preferencesWindow.setWindowFlags(preferencesWindow.windowFlags() | Qt::WindowStaysOnTopHint);
 
     // set up tray icon
-    // trayIcon.setIcon(QIcon("/usr/share/icons/lumid.png"));
+    // trayIcon.setIcon(QIcon("/usr/share/icons/lumid-icon.png"));
     trayIcon.setIcon(QIcon("../assets/icon.png")); // for debug/run in vscode, the path might be "assets/icon.png", it depends on the launch.json
     trayIcon.setContextMenu(&trayMenu);
     trayIcon.show();
