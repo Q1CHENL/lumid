@@ -21,6 +21,10 @@
 #include <QPushButton>
 #include <QSpinBox>
 
+#define PREFSWINDOW_WIDTH 240
+#define PREFSWINDOW_HEIGHT 180
+#define LABEL_SPINBOX_WIDTH 120
+
 class PreferencesWindow : public QDialog {
    public:
     // In C++, you generally only provide default values

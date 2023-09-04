@@ -8,6 +8,7 @@
 
 PreferencesWindow::PreferencesWindow() : QDialog() {
     setWindowTitle("Preferences");
+    setFixedSize(PREFSWINDOW_WIDTH, PREFSWINDOW_HEIGHT);
 
     strideLayout = new QHBoxLayout();
     increaseLayout = new QHBoxLayout();
@@ -15,27 +16,31 @@ PreferencesWindow::PreferencesWindow() : QDialog() {
     bottomButtonLayout = new QHBoxLayout();
     mainLayout = new QVBoxLayout();
 
-    strideLabel = new QLabel("Stride: ");
+    strideLabel = new QLabel(" Stride:  ");
     strideLayout->addWidget(strideLabel);
 
     spinbox = new QSpinBox();  // Qt will manage its lifetime
     spinbox->setMinimum(1);
     spinbox->setMaximum(100);
     spinbox->setValue(10);
+    spinbox->setFixedWidth(LABEL_SPINBOX_WIDTH);
 
     keySeqEditIncrease = new QKeySequenceEdit(Qt::Key_F6);
     keySeqEditDecrease = new QKeySequenceEdit(Qt::Key_F5);
 
-    increaseLabel = new QLabel("Increase: ");
+    keySeqEditIncrease->setFixedWidth(LABEL_SPINBOX_WIDTH);
+    keySeqEditDecrease->setFixedWidth(LABEL_SPINBOX_WIDTH);
+
+    increaseLabel = new QLabel(" Increase:");
     increaseLayout->addWidget(increaseLabel);
     increaseLayout->addWidget(keySeqEditIncrease);
 
-    decreaseLabel = new QLabel("Decrease: ");
+    decreaseLabel = new QLabel(" Decrease:");
     decreaseLayout->addWidget(decreaseLabel);
     decreaseLayout->addWidget(keySeqEditDecrease);
 
     resetButton = new QPushButton("Reset", this);
-    applyButton = new QPushButton("Apply", this);  // Qt will manage its lifetime
+    applyButton = new QPushButton("Apply", this);
 
     bottomButtonLayout->addWidget(resetButton);
     bottomButtonLayout->addWidget(applyButton);
@@ -50,7 +55,8 @@ PreferencesWindow::PreferencesWindow() : QDialog() {
     // Make preferences appear in the center
     QRect screenGeometry = QGuiApplication::screens().at(0)->geometry();
     posX = ((screenGeometry.width() - this->width()) / 2) - this->width() / 2;
-    posY = (screenGeometry.height() - this->height()) / 2 + screenGeometry.top() - this->height() / 2;
+    posY = (screenGeometry.height() - this->height()) / 2 +
+           screenGeometry.top() - this->height() / 2;
 }
 
 void PreferencesWindow::closeEvent(QCloseEvent* event) {
