@@ -21,8 +21,6 @@ This app has only been tested on my own Fedora 37 with GNOME 43.7 and Fefora 38 
 
 ## Known Issues
 
-- Title bar color does not change along with system theme.
-
 - Following errors may occur on **Wayland** due to its compatibility issues with GNOME:
 
   `QObject::connect: No such signal QPlatformNativeInterface::systemTrayWindowChanged(QScreen*)`
